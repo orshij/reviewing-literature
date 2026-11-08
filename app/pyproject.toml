@@ -1,0 +1,27 @@
+[project]
+name = "litrev-app"
+version = "0.4.4"
+description = "Litrev App: run the reviewing-literature skill from a local web page on your own Claude Code login"
+requires-python = ">=3.10"
+dependencies = ["openpyxl>=3.1", "pyarrow>=14"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+litrev-app = "litrev_app.cli:main"
+litrev-app-mcp = "litrev_app.ask_mcp:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+litrev_app = ["briefs/*.txt", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]

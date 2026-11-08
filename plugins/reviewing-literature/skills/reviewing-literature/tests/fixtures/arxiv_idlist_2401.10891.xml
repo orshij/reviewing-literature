@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/9Tjjz+ye3GPsyfXEV64ki+UfbzM</id>
+  <title>arXiv Query: search_query=&amp;id_list=2401.10891&amp;start=0&amp;max_results=10</title>
+  <updated>2026-10-02T10:49:54Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2401.10891" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2401.10891v2</id>
+    <title>Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data</title>
+    <updated>2024-04-07T06:52:21Z</updated>
+    <link href="https://arxiv.org/abs/2401.10891v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2401.10891v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This work presents Depth Anything, a highly practical solution for robust monocular depth estimation. Without pursuing novel technical modules, we aim to build a simple yet powerful foundation model dealing with any images under any circumstances. To this end, we scale up the dataset by designing a data engine to collect and automatically annotate large-scale unlabeled data (~62M), which significantly enlarges the data coverage and thus is able to reduce the generalization error. We investigate two simple yet effective strategies that make data scaling-up promising. First, a more challenging optimization target is created by leveraging data augmentation tools. It compels the model to actively seek extra visual knowledge and acquire robust representations. Second, an auxiliary supervision is developed to enforce the model to inherit rich semantic priors from pre-trained encoders. We evaluate its zero-shot capabilities extensively, including six public datasets and randomly captured photos. It demonstrates impressive generalization ability. Further, through fine-tuning it with metric depth information from NYUv2 and KITTI, new SOTAs are set. Our better depth model also results in a better depth-conditioned ControlNet. Our models are released at https://github.com/LiheYoung/Depth-Anything.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-01-19T18:59:52Z</published>
+    <arxiv:comment>Accepted by CVPR 2024. Project page: https://depth-anything.github.io</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Lihe Yang</name>
+    </author>
+    <author>
+      <name>Bingyi Kang</name>
+    </author>
+    <author>
+      <name>Zilong Huang</name>
+    </author>
+    <author>
+      <name>Xiaogang Xu</name>
+    </author>
+    <author>
+      <name>Jiashi Feng</name>
+    </author>
+    <author>
+      <name>Hengshuang Zhao</name>
+    </author>
+  </entry>
+</feed>

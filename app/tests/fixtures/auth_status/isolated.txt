@@ -1,0 +1,9 @@
+{
+  "loggedIn": false,
+  "authMethod": "none",
+  "apiProvider": "firstParty",
+  "analyticsDisabled": false,
+  "projectsDirectory": "/var/folders/gf/sjs_vb4n1fd8zq0qj9426tbr0000gn/T/tmp.mcd7p4ENER/projects",
+  "configDirectory": "/var/folders/gf/sjs_vb4n1fd8zq0qj9426tbr0000gn/T/tmp.mcd7p4ENER"
+}
+exit=1

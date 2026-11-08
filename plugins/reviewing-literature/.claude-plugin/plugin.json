@@ -1,0 +1,19 @@
+{
+  "name": "reviewing-literature",
+  "version": "1.37.0",
+  "description": "Structured literature reviews: linked paper / dataset / benchmark / metric / result tables with stable IDs and per-cell evidence, built from arXiv, OpenAlex, Semantic Scholar, Hugging Face and the Papers-with-Code archive, rendered to Markdown, CSV, xlsx and a navigable HTML hub.",
+  "author": {
+    "name": "Or Shimshi"
+  },
+  "keywords": [
+    "literature-review",
+    "survey",
+    "papers",
+    "benchmarks",
+    "datasets",
+    "research"
+  ],
+  "homepage": "https://github.com/orshij/reviewing-literature",
+  "repository": "https://github.com/orshij/reviewing-literature",
+  "license": "MIT"
+}

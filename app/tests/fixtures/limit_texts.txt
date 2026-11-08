@@ -1,0 +1,22 @@
+  47 You've hit your session limit · resets 8:40pm (Asia/Jerusalem)
+  16 You've hit your weekly limit · resets Oct 4 at 12am (Asia/Jerusalem) (error type rate_limit, HTTP 429, request id re
+  16 You've hit your weekly limit · resets Oct 4 at 12am (Asia/Jerusalem)
+  13 You've hit your session limit · resets 9:30pm (Asia/Jerusalem)
+  12 You've hit your session limit · resets 9:30pm (Asia/Jerusalem) (error type rate_limit, HTTP 429, request id req_011C
+  12 You've hit your session limit · resets 2:30pm (Asia/Jerusalem)
+   9 You've hit your session limit · resets 6:10pm (Asia/Jerusalem) (error type rate_limit, HTTP 429, request id req_011C
+   7 You've hit your session limit · resets 4:10pm (Asia/Jerusalem) (error type rate_limit, HTTP 429, request id req_011C
+   6 You've hit your weekly limit · resets Oct 2
+   6 You've hit your session limit · resets 6:10pm (Asia/Jerusalem)
+   5 You've hit your session limit · resets 4:10pm (Asia/Jerusalem)
+   4 You've hit your weekly limit. will it start automatically when the week is done?
+   4 You've hit your weekly limit · resets Mon 12:00am
+   4 You've hit your usage limit
+   4 You've hit your Sonnet limit · resets 3:45pm
+   4 You've hit your session limit · resets 3:45pm
+   4 You've hit your session limit
+   4 You've hit your Opus limit · resets 3:45pm
+   2 You've hit your session limit` / `You've hit your weekly limit` / `You've hit your Opus limit` / `You've hit your So
+   2 You've hit your individual usage limit`.
+   2 You've hit your individual usage limit`
+   1 You've hit your weekly limit · resets 12am (Asia/Jerusalem)

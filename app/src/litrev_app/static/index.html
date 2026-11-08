@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="litrev-version" content="{{version}}">
+<title>Litrev</title>
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="mark" href="#/reviews">Litrev</a>
+  <nav class="nav" aria-label="Main">
+    <a href="#/reviews" data-nav="reviews">Reviews</a>
+    <a href="#/new" data-nav="new">New review</a>
+    <a href="#/settings" data-nav="settings">Settings</a>
+  </nav>
+  <button class="btn quiet small" type="button" id="theme">Dark</button>
+</header>
+<div id="problems" class="problems" hidden></div>
+<main id="main" tabindex="-1"></main>
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+<script src="/static/review.js"></script>
+<script src="/static/asks.js"></script>
+<!-- feature scripts -->
+<script src="/static/doctor.js"></script>
+<script src="/static/publish.js"></script>
+<script src="/static/toolbar.js"></script>
+<script src="/static/chat.js"></script>
+<script src="/static/refresh.js"></script>
+<!-- /feature scripts -->
+</body>
+</html>

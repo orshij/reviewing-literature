@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/LX16883V95s0CeXRMe8uPMd2XkE</id>
+  <title>arXiv Query: search_query=all:"monocular depth estimation" AND cat:cs.CV&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-10-02T10:49:58Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:%22monocular+depth+estimation%22+AND+cat:cs.CV&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>1005</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2312.15268v9</id>
+    <title>Manydepth2: Motion-Aware Self-Supervised Monocular Depth Estimation in Dynamic Scenes</title>
+    <updated>2025-03-13T19:28:00Z</updated>
+    <link href="https://arxiv.org/abs/2312.15268v9" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2312.15268v9" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Despite advancements in self-supervised monocular depth estimation, challenges persist in dynamic scenarios due to the dependence on assumptions about a static world. In this paper, we present Manydepth2, to achieve precise depth estimation for both dynamic objects and static backgrounds, all while maintaining computational efficiency. To tackle the challenges posed by dynamic content, we incorporate optical flow and coarse monocular depth to create a pseudo-static reference frame. This frame is then utilized to build a motion-aware cost volume in collaboration with the vanilla target frame. Furthermore, to improve the accuracy and robustness of the network architecture, we propose an attention-based depth network that effectively integrates information from feature maps at different resolutions by incorporating both channel and non-local attention mechanisms. Compared to methods with similar computational costs, Manydepth2 achieves a significant reduction of approximately five percent in root-mean-square error for self-supervised monocular depth estimation on the KITTI-2015 dataset. The code could be found at https://github.com/kaichen-z/Manydepth2.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-12-23T14:36:27Z</published>
+    <arxiv:comment>Monocular Depth Estimation, Self-Supervised, Optical Flow</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Kaichen Zhou</name>
+    </author>
+    <author>
+      <name>Jia-Wang Bian</name>
+    </author>
+    <author>
+      <name>Jian-Qing Zheng</name>
+    </author>
+    <author>
+      <name>Jiaxing Zhong</name>
+    </author>
+    <author>
+      <name>Qian Xie</name>
+    </author>
+    <author>
+      <name>Niki Trigoni</name>
+    </author>
+    <author>
+      <name>Andrew Markham</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2207.08951v1</id>
+    <title>MonoIndoor++:Towards Better Practice of Self-Supervised Monocular Depth Estimation for Indoor Environments</title>
+    <updated>2022-07-18T21:34:43Z</updated>
+    <link href="https://arxiv.org/abs/2207.08951v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2207.08951v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Self-supervised monocular depth estimation has seen significant progress in recent years, especially in outdoor environments. However, depth prediction results are not satisfying in indoor scenes where most of the existing data are captured with hand-held devices. As compared to outdoor environments, estimating depth of monocular videos for indoor environments, using self-supervised methods, results in two additional challenges: (i) the depth range of indoor video sequences varies a lot across different frames, making it difficult for the depth network to induce consistent depth cues for training; (ii) the indoor sequences recorded with handheld devices often contain much more rotational motions, which cause difficulties for the pose network to predict accurate relative camera poses. In this work, we propose a novel framework-MonoIndoor++ by giving special considerations to those challenges and consolidating a set of good practices for improving the performance of self-supervised monocular depth estimation for indoor environments. First, a depth factorization module with transformer-based scale regression network is proposed to estimate a global depth scale factor explicitly, and the predicted scale factor can indicate the maximum depth values. Second, rather than using a single-stage pose estimation strategy as in previous methods, we propose to utilize a residual pose estimation module to estimate relative camera poses across consecutive frames iteratively. Third, to incorporate extensive coordinates guidance for our residual pose estimation module, we propose to perform coordinate convolutional encoding directly over the inputs to pose networks. The proposed method is validated on a variety of benchmark indoor datasets, i.e., EuRoC MAV, NYUv2, ScanNet and 7-Scenes, demonstrating the state-of-the-art performance.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2022-07-18T21:34:43Z</published>
+    <arxiv:comment>Journal version of "MonoIndoor: Towards Good Practice of Self-Supervised Monocular Depth Estimation for Indoor Environments"(ICCV-2021). arXiv admin note: substantial text overlap with arXiv:2107.12429</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Runze Li</name>
+    </author>
+    <author>
+      <name>Pan Ji</name>
+    </author>
+    <author>
+      <name>Yi Xu</name>
+    </author>
+    <author>
+      <name>Bir Bhanu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2008.08454v2</id>
+    <title>Exploring the Impacts from Datasets to Monocular Depth Estimation (MDE) Models with MineNavi</title>
+    <updated>2022-06-28T13:55:03Z</updated>
+    <link href="https://arxiv.org/abs/2008.08454v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2008.08454v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Current computer vision tasks based on deep learning require a huge amount of data with annotations for model training or testing, especially in some dense estimation tasks, such as optical flow segmentation and depth estimation. In practice, manual labeling for dense estimation tasks is very difficult or even impossible, and the scenes of the dataset are often restricted to a small range, which dramatically limits the development of the community. To overcome this deficiency, we propose a synthetic dataset generation method to obtain the expandable dataset without burdensome manual workforce. By this method, we construct a dataset called MineNavi containing video footages from first-perspective-view of the aircraft matched with accurate ground truth for depth estimation in aircraft navigation application. We also provide quantitative experiments to prove that pre-training via our MineNavi dataset can improve the performance of depth estimation model and speed up the convergence of the model on real scene data. Since the synthetic dataset has a similar effect to the real-world dataset in the training process of deep model, we also provide additional experiments with monocular depth estimation method to demonstrate the impact of various factors in our dataset such as lighting conditions and motion mode.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.RO" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2020-08-19T14:03:17Z</published>
+    <arxiv:comment>6 pages,10 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <arxiv:journal_ref>Wang X, Liang B, Yang M, et al. What makes the unsupervised monocular depth estimation (UMDE) model training better[J]. Scientific Reports, 2022, 12(1): 21999</arxiv:journal_ref>
+    <author>
+      <name>Xiangtong Wang</name>
+    </author>
+    <author>
+      <name>Binbin Liang</name>
+    </author>
+    <author>
+      <name>Menglong Yang</name>
+    </author>
+    <author>
+      <name>Wei Li</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2306.05682v1</id>
+    <title>Lightweight Monocular Depth Estimation via Token-Sharing Transformer</title>
+    <updated>2023-06-09T05:51:40Z</updated>
+    <link href="https://arxiv.org/abs/2306.05682v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2306.05682v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Depth estimation is an important task in various robotics systems and applications. In mobile robotics systems, monocular depth estimation is desirable since a single RGB camera can be deployable at a low cost and compact size. Due to its significant and growing needs, many lightweight monocular depth estimation networks have been proposed for mobile robotics systems. While most lightweight monocular depth estimation methods have been developed using convolution neural networks, the Transformer has been gradually utilized in monocular depth estimation recently. However, massive parameters and large computational costs in the Transformer disturb the deployment to embedded devices. In this paper, we present a Token-Sharing Transformer (TST), an architecture using the Transformer for monocular depth estimation, optimized especially in embedded devices. The proposed TST utilizes global token sharing, which enables the model to obtain an accurate depth prediction with high throughput in embedded devices. Experimental results show that TST outperforms the existing lightweight monocular depth estimation methods. On the NYU Depth v2 dataset, TST can deliver depth maps up to 63.4 FPS in NVIDIA Jetson nano and 142.6 FPS in NVIDIA Jetson TX2, with lower errors than the existing methods. Furthermore, TST achieves real-time depth estimation of high-resolution images on Jetson TX2 with competitive results.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.RO" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.IV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-06-09T05:51:40Z</published>
+    <arxiv:comment>ICRA 2023</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Dong-Jae Lee</name>
+    </author>
+    <author>
+      <name>Jae Young Lee</name>
+    </author>
+    <author>
+      <name>Hyounguk Shon</name>
+    </author>
+    <author>
+      <name>Eojindl Yi</name>
+    </author>
+    <author>
+      <name>Yeong-Hun Park</name>
+    </author>
+    <author>
+      <name>Sung-Sik Cho</name>
+    </author>
+    <author>
+      <name>Junmo Kim</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2412.20390v1</id>
+    <title>MetricDepth: Enhancing Monocular Depth Estimation with Deep Metric Learning</title>
+    <updated>2024-12-29T07:57:12Z</updated>
+    <link href="https://arxiv.org/abs/2412.20390v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2412.20390v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Deep metric learning aims to learn features relying on the consistency or divergence of class labels. However, in monocular depth estimation, the absence of a natural definition of class poses challenges in the leveraging of deep metric learning. Addressing this gap, this paper introduces MetricDepth, a novel method that integrates deep metric learning to enhance the performance of monocular depth estimation. To overcome the inapplicability of the class-based sample identification in previous deep metric learning methods to monocular depth estimation task, we design the differential-based sample identification. This innovative approach identifies feature samples as different sample types by their depth differentials relative to anchor, laying a foundation for feature regularizing in monocular depth estimation models. Building upon this advancement, we then address another critical problem caused by the vast range and the continuity of depth annotations in monocular depth estimation. The extensive and continuous annotations lead to the diverse differentials of negative samples to anchor feature, representing the varied impact of negative samples during feature regularizing. Recognizing the inadequacy of the uniform strategy in previous deep metric learning methods for handling negative samples in monocular depth estimation task, we propose the multi-range strategy. Through further distinction on negative samples according to depth differential ranges and implementation of diverse regularizing, our multi-range strategy facilitates differentiated regularization interactions between anchor feature and its negative samples. Experiments across various datasets and model types demonstrate the effectiveness and versatility of MetricDepth,confirming its potential for performance enhancement in monocular depth estimation task.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-12-29T07:57:12Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Chunpu Liu</name>
+    </author>
+    <author>
+      <name>Guanglei Yang</name>
+    </author>
+    <author>
+      <name>Wangmeng Zuo</name>
+    </author>
+    <author>
+      <name>Tianyi Zan</name>
+    </author>
+  </entry>
+</feed>

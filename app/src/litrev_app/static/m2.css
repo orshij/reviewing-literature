@@ -1,0 +1,52 @@
+/* Litrev App M2: header toolbar (usage meters, Update), Ask Claude tab, New papers tab. Loaded as a file because the
+   app's CSP (style-src 'self') blocks inline <style> elements. Colours come from app.css, so the Dark toggle applies. */
+:root {
+  --m2-ok: var(--pen); --m2-warn: var(--warn); --m2-crit: var(--bad); --m2-muted: var(--ink-2);
+  --m2-surface: var(--sheet); --m2-line: var(--rule);
+  --m2-bubble: color-mix(in srgb, var(--ink) 6%, var(--sheet)); --m2-mine: color-mix(in srgb, var(--pen) 14%, var(--sheet));
+}
+
+/* shared */
+.m2-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.m2-grow { flex: 1; }
+.m2-col { display: flex; flex-direction: column; gap: 6px; }
+.m2-muted { color: var(--m2-muted); font-size: 12px; }
+.m2-note { color: var(--m2-warn); }
+.m2-primary { border-color: var(--m2-ok); }
+.m2-btn { font: inherit; padding: 2px 10px; border-radius: 6px; border: 1px solid var(--m2-line); background: transparent; color: inherit; cursor: pointer; }
+
+/* toolbar */
+.m2-toolbar { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; font: 12px/1.3 var(--sans, system-ui), sans-serif; }
+.m2-floating { position: fixed; top: 8px; right: 12px; z-index: 50; padding: 4px 10px; border: 1px solid var(--m2-line); border-radius: 999px; background: var(--m2-surface); }
+.m2-meters { display: inline-flex; align-items: center; gap: 10px; }
+.m2-meter { display: inline-flex; align-items: center; gap: 5px; }
+.m2-meter.m2-ok { --m2-fill: var(--m2-ok); }
+.m2-meter.m2-warn { --m2-fill: var(--m2-warn); }
+.m2-meter.m2-crit { --m2-fill: var(--m2-crit); }
+.m2-track { display: inline-block; width: 52px; height: 6px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--m2-fill) 22%, transparent); }
+.m2-fill { display: block; height: 100%; border-radius: 3px; background: var(--m2-fill); }
+.m2-val { font-variant-numeric: tabular-nums; }
+.m2-dialog { max-width: 720px; width: 90vw; border: 1px solid var(--m2-line); border-radius: 10px; background: var(--m2-surface); color: inherit; }
+.m2-dialog pre { max-height: 240px; overflow: auto; white-space: pre-wrap; font-size: 11px; }
+
+/* Ask Claude */
+.m2-chat { display: flex; flex-direction: column; gap: 10px; max-width: 900px; }
+.m2-badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--m2-line); }
+.m2-chat-list { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow: auto; padding: 4px; }
+.m2-msg { padding: 8px 12px; border-radius: 10px; background: var(--m2-bubble); max-width: 85%; }
+.m2-msg.m2-user { align-self: flex-end; background: var(--m2-mine); }
+.m2-msg.m2-error { border: 1px solid var(--m2-crit); }
+.m2-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.m2-acts { margin: 4px 0 0; padding-left: 16px; color: var(--m2-muted); font-size: 12px; }
+.m2-acts .m2-error { color: var(--m2-crit); }
+.m2-meta { margin-top: 4px; color: var(--m2-muted); font-size: 11px; }
+.m2-chat-input textarea { flex: 1; min-width: 280px; font: inherit; padding: 6px; border-radius: 6px; border: 1px solid var(--m2-line); background: transparent; color: inherit; }
+
+/* New papers */
+.m2-refresh { display: flex; flex-direction: column; gap: 10px; max-width: 900px; }
+.m2-cands { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.m2-cand { padding: 8px 10px; border: 1px solid var(--m2-line); border-radius: 8px; }
+.m2-rec { font-size: 12px; margin-top: 2px; }
+.m2-rec-in { font-weight: 600; }
+.m2-wide { width: 100%; font: inherit; padding: 6px; border-radius: 6px; border: 1px solid var(--m2-line); background: transparent; color: inherit; }
+.m2-acts-list { margin: 0; padding-left: 16px; color: var(--m2-muted); font-size: 12px; }

@@ -1,0 +1,15 @@
+{
+  "name": "litrev",
+  "description": "Literature-review plugins for Claude Code.",
+  "owner": {
+    "name": "Or Shimshi"
+  },
+  "plugins": [
+    {
+      "name": "reviewing-literature",
+      "source": "./plugins/reviewing-literature",
+      "description": "Structured literature reviews: linked paper / dataset / benchmark / metric / result tables with per-cell evidence, rendered to Markdown, CSV, xlsx and an HTML hub.",
+      "version": "1.37.0"
+    }
+  ]
+}

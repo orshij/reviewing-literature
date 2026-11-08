@@ -1,0 +1,1261 @@
+<title>__TITLE__ literature hub</title>
+<style>
+/* Layout: fixed left rail of tables, main pane with sortable/filterable tables; evidence status drives cell tint. */
+:root{--c1:#2a78d6;--c2:#eb6834;--c3:#1baf7a;--c4:#eda100;--c5:#e87ba4;--bg:#f7f7f5;--fg:#1c1c1a;--muted:#6b6b66;--panel:#fff;--line:#e3e3df;--accent:#2d5fa6;--warn:#b8860b;--bad:#b23a3a;--ok:#2d7a4f;--neg:#f3efe6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;--bg:#15161a;--fg:#e8e8e4;--muted:#9a9a94;--panel:#1d1f24;--line:#30323a;--accent:#7fa7e6;--warn:#d9a441;--bad:#e06c6c;--ok:#5fbf86;--neg:#2a2620;color-scheme:dark}}
+:root[data-theme="dark"]{--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;--bg:#15161a;--fg:#e8e8e4;--muted:#9a9a94;--panel:#1d1f24;--line:#30323a;--accent:#7fa7e6;--warn:#d9a441;--bad:#e06c6c;--ok:#5fbf86;--neg:#2a2620;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+nav{border-right:1px solid var(--line);padding:16px;background:var(--panel);position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto}
+nav h1{font-size:15px;margin:0 0 12px}
+nav a{display:block;padding:6px 8px;border-radius:6px;color:var(--fg);text-decoration:none}
+nav a.active{background:var(--accent);color:#fff}
+nav .cnt{float:right;color:var(--muted);font-size:12px}
+nav a.active .cnt{color:#fff}
+nav details.grp{margin-top:6px}
+nav details.grp>summary{padding:6px 8px;border-radius:6px;cursor:pointer;color:var(--fg)}
+nav details.grp>summary.active{background:var(--line)}
+nav details.grp>a{padding-left:20px}
+nav #pipeline{margin-top:10px;font-size:.85em;color:var(--muted)}
+nav #theme{margin-top:6px}
+main{padding-block:16px;padding-inline:24px;min-width:0}
+h2{margin:0 0 8px;font-size:18px}
+.tools{display:flex;gap:8px;align-items:center;margin:8px 0 12px;flex-wrap:wrap}
+input[type=search]{padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);min-width:240px}
+button{padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);cursor:pointer}
+.wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;max-width:420px}
+th{position:sticky;top:0;background:var(--panel);cursor:pointer;white-space:nowrap;user-select:none}
+th .dir{color:var(--muted);font-size:11px}
+td.neg{background:var(--neg)}
+.st{display:inline-block;font-size:11px;padding:0 5px;border-radius:4px;border:1px solid var(--line);color:var(--muted);margin-left:4px;white-space:nowrap}
+.st.verified{color:var(--ok);border-color:var(--ok)}
+.st.author-reported{color:var(--accent);border-color:var(--accent)}
+.st.inferred{color:var(--warn);border-color:var(--warn)}
+.st.not-found,.st.inaccessible,.st.not-reported{color:var(--bad);border-color:var(--bad)}
+a.src{font-size:11px;color:var(--muted);text-decoration:none;margin-left:4px}
+a.src:hover{text-decoration:underline}
+svg a:hover .kpi-lab{text-decoration:underline}
+a.rt-res{text-decoration:underline dotted}
+a.id{color:var(--accent);text-decoration:none;font-family:ui-monospace,Menlo,monospace}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:10px 0}
+.card{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--panel)}
+.card b{display:block;font-size:22px}
+.card span{color:var(--muted);font-size:12px}
+details{margin:8px 0}
+pre{white-space:pre-wrap;font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px}
+.muted{color:var(--muted)}
+.quote{display:block;font-size:12px;color:var(--muted);border-left:2px solid var(--line);padding-left:6px;margin-top:3px}
+.lb-opts{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:4px 0 12px;font-size:13px}
+.lb-opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.board{margin:0 0 22px}
+.board h3{font-size:15px;margin:0 0 2px}
+.board .sub{color:var(--muted);font-size:12px;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.board td.rk{font-weight:600;width:2.5em}
+.board tr.top td{background:color-mix(in srgb,var(--ok) 9%,transparent)}
+.board td.val{white-space:nowrap;font-weight:600}
+.board td.proto{max-width:340px;font-size:12px;color:var(--muted)}
+.badge{display:inline-block;font-size:11px;padding:0 5px;border-radius:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.yes{color:var(--ok);border-color:var(--ok)}
+.badge.base{color:var(--warn);border-color:var(--warn)}
+.warnline{font-size:12px;color:var(--warn)}
+.adj-map{display:grid;grid-template-columns:minmax(0,1fr) minmax(4em,12em) auto;gap:6px 12px;align-items:center;margin:10px 0 18px;font-size:15px}
+.adj-map a{color:var(--fg);text-decoration:none;font-weight:600;line-height:1.3}
+.adj-map a:hover{text-decoration:underline}
+.adj-map .bar{height:8px;border-radius:3px;background:var(--accent);min-width:2px}
+.adj-map .bar.alt{background:var(--muted)}
+.adj-map .n{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.adj{margin:0 0 22px;scroll-margin-top:12px}
+.adj h3{font-size:17px;margin:0 0 4px}
+.adj p{margin:2px 0 6px}
+.adj td.c{white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.adj-map{grid-template-columns:minmax(0,1fr) auto}.adj-map .bar{grid-column:1/-1;order:0}}
+details.singles>summary{cursor:pointer;margin:6px 0 10px;color:var(--muted)}
+.lb-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:10px;display:grid;grid-template-columns:auto minmax(0,1.6fr) auto minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+.lb-bar select,.lb-bar input[type=search]{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);width:100%;min-width:0}
+.lb-bar .q{grid-column:1/-1}
+.lb-bar button{padding:5px 9px}
+.lb-index{margin:12px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 12px;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;align-items:baseline}
+.lb-index .dsn{font-size:12px;font-weight:600;white-space:nowrap}
+.lb-index .chips{display:flex;flex-wrap:wrap;gap:4px 6px;min-width:0}
+.lb-index a{font-size:12px;line-height:1.5;padding:1px 8px;border:1px solid var(--line);border-radius:999px;color:var(--fg);text-decoration:none;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-index a .n{color:var(--muted);margin-left:5px;font-variant-numeric:tabular-nums}
+.lb-index a.single{border-style:dashed;color:var(--muted)}
+.lb-index a:hover,.lb-index a:focus-visible{border-color:var(--accent);color:var(--accent)}
+.board{scroll-margin-top:calc(var(--barh,110px) + 8px)}
+.board .bnav{float:right;font-size:12px;display:flex;gap:10px}
+.board .bnav a{color:var(--accent);text-decoration:none}
+.board.flash{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
+.board th{position:static;cursor:default}
+.board td.paper{min-width:14em}
+.board td.proto{max-width:30em}
+.board .avail{display:flex;gap:4px;flex-wrap:wrap}
+.board td.srcc{font-size:12px;white-space:nowrap}
+.board td.srcc .loc{display:block;max-width:16em;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
+@media (max-width:860px){.lb-bar{grid-template-columns:auto minmax(0,1fr) auto}.lb-bar .ds,.lb-bar .sp{grid-column:1/-1}.lb-index{grid-template-columns:1fr}}
+.kbd{font:11px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+@media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}nav{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}nav h1{width:100%}nav details.grp{width:100%}nav details.grp>a{display:inline-block;padding-left:8px}nav .cnt{display:none}main{padding-inline:16px}}
+th,td{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.clusters{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:12px 0}
+.cluster{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--panel)}
+.cluster h3{margin:0 0 4px;font-size:15px}
+.cluster ul{margin:6px 0 0;padding-left:18px}
+.badge{display:inline-block;font-size:11px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;margin-left:4px}
+.slide-nav{display:flex;gap:8px;align-items:center;margin:0 0 12px;flex-wrap:wrap}
+#sl-fold{margin-left:auto}
+/* A family slide reads text first: the explanation on the left, the paper's figure on the right; with no embedded
+   figure, the KPI, links and figure note take the right column */
+.slide{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:20px 24px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px 28px;align-items:start;font-size:15px;line-height:1.55}
+.slide.slide-nofig{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+.slide .sl-side{border-left:1px solid var(--line);padding-left:20px}
+.slide .sl-side .kpi{margin-top:0}
+.slide h2{grid-column:1/-1;font-size:22px;margin:0;text-wrap:balance}
+.slide .chip{font-size:12px;color:var(--muted);margin:0 0 6px}
+.slide figure{margin:0}
+.slide figure img{max-width:100%;height:auto;border-radius:6px;background:#fff}
+.slide figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.slide dl{margin:0}
+.slide dt{font-weight:600;margin-top:16px}
+.slide dl>dt:first-child{margin-top:0}
+.slide dd{margin:2px 0 0;max-width:60ch}
+.slide .kpi{margin-top:18px;display:grid;gap:2px;font-variant-numeric:tabular-nums}
+.slide .kpi .kl{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.kpib{display:grid;gap:1px;font-variant-numeric:tabular-nums}
+.kpib .kb{font-size:12px;line-height:1.35}
+.kpi-list{display:grid;gap:8px}
+table.syn td{min-width:11ch}
+table.syn .kpib{min-width:24ch}
+table.lim th.lim-fam{min-width:13ch;max-width:24ch;white-space:normal;font-weight:500;vertical-align:bottom}
+table.lim td.lim-p{min-width:30ch;max-width:46ch}
+table.lim td.lc{white-space:nowrap;font-size:13px;cursor:help}
+.lc-aa{color:var(--bad)}
+.lc-ai{color:var(--warn)}
+.lc-ad{color:var(--ok)}
+table.lim .lc-ns{color:var(--muted);cursor:default}
+.lim-sec{margin-top:8px}
+.lim-sec>h3{margin:0 0 6px}
+.lim-sec>p{margin:0 0 6px}
+.lim-sec .lim-list{margin-top:18px}
+.lim-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;margin:6px 0 10px}
+.lim-list .ev-cell{margin:4px 0}
+.lim-open{border:1px dashed var(--line);border-radius:8px;padding:10px 14px;margin-top:14px;background:var(--panel)}
+.lim-open h4{margin:0 0 4px}
+.lim-open .takeaways{margin:8px 0 0}
+a.famref.famcell{white-space:normal;border-bottom:0}
+.slide .pline{grid-column:1/-1;margin:-10px 0 0;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center}
+.slide .pline b a{color:var(--fg)}
+.slide .pline .ids{font-size:12px}
+.slide .fig-note{font-size:13px;color:var(--muted);margin:12px 0 0;max-width:76ch}
+.slide .srcl{margin:6px 0 0;font-size:12px;color:var(--muted)}
+/* Glossary terms in the text: dotted underline; hover or focus shows the plain meaning */
+.gl{text-decoration:underline dotted var(--muted);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:help;position:relative}
+.gl:hover::after,.gl:focus::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:max-content;max-width:min(42ch,60vw);padding:7px 10px;border-radius:6px;background:var(--fg);color:var(--bg);font-size:13px;line-height:1.4;font-weight:400;white-space:normal;box-shadow:0 3px 10px rgba(0,0,0,.25);pointer-events:none}
+/* The page's own tooltip for .ftip cells (limitations matrix); tipShow() places it, fixed to the window */
+#tip{position:fixed;z-index:60;max-width:min(56ch,80vw);padding:8px 11px;border-radius:6px;background:var(--fg);color:var(--bg);font-size:13px;line-height:1.45;font-weight:400;white-space:normal;box-shadow:0 3px 10px rgba(0,0,0,.25);pointer-events:none}
+#tip[hidden]{display:none}
+.ftip:focus{outline:none}
+.ftip:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.gl:focus{outline:none}
+.gl:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+b.claim{font-weight:600}
+a.famref{color:inherit;text-decoration:none;border-bottom:1px solid var(--line);white-space:nowrap}
+a.famref:hover{border-bottom-color:var(--accent);color:var(--accent)}
+a.famref .sw{width:8px;height:8px;margin-right:4px;vertical-align:1px}
+details.fold.un{padding-top:8px}
+details.fold.un>summary{font-weight:400;font-size:13px;color:var(--muted)}
+@media (max-width:860px){.slide{grid-template-columns:1fr;padding:14px}}
+.slide.slide-wide{grid-template-columns:minmax(0,1fr)}
+.slide .lede{margin:0;max-width:75ch;color:var(--muted)}
+.slide-steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.slide-steps a{font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;color:var(--fg);text-decoration:none;background:var(--panel);display:inline-flex;gap:6px;align-items:center;max-width:30ch;min-width:0}
+.slide-steps a .n{color:var(--muted);font-variant-numeric:tabular-nums}
+.slide-steps a .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.slide-steps a.on{border-color:var(--accent);color:var(--accent)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+.fam-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.fam{border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}
+.fam b{display:inline-flex;gap:8px;align-items:center}
+.fam p{margin:4px 0 6px;font-size:12px}
+.fam ol{margin:0;padding-left:18px;font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.kpi-grid h4{margin:0 0 4px;font-size:13px}
+.kpi-grid svg{width:100%;height:auto;display:block}
+.kpi-grid svg text{font:12px ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.strip{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px}
+.strip h3,.strip h4{margin:0;font-size:14px}
+.strip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 16px;margin:0}
+/* Collapsed by default: the long parts under a slide (summary = the part's title) and each section's longer text */
+details.fold{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px;margin:0}
+details.fold>summary{cursor:pointer;font-weight:600;font-size:14px}
+details.fold>summary:hover{color:var(--accent)}
+details.fold>.strip{border-top:0;padding-top:8px}
+details.fold>.strip>h3:first-child{display:none}
+details.fold>dl.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 18px;margin:8px 0 0;font-size:13px}
+details.fold>dl.gloss dt{margin:0}
+details.fold>dl.gloss dd{margin:2px 0 0;color:var(--muted)}
+details.more-d{margin:4px 0 0}
+details.more-d>summary{cursor:pointer;color:var(--accent);font-size:12px}
+details.more-d>p{margin:4px 0 0;font-size:14px;max-width:76ch}
+/* Method diagram: the writer's boxes and arrows, left to right, full slide width; it scrolls in its own box when narrow */
+.mdiag-wrap{grid-column:1/-1;margin:0}
+.mdiag-scroll{overflow-x:auto}
+.mdiag{display:block;height:auto}
+.mdiag text{font:12px ui-sans-serif,system-ui,sans-serif;fill:var(--fg)}
+.mdiag rect{stroke-width:1.4}
+.mdiag .md-input rect{fill:var(--panel);stroke:var(--muted);stroke-dasharray:4 3}
+.mdiag .md-step rect{fill:color-mix(in srgb,var(--accent) 7%,var(--panel));stroke:var(--line)}
+.mdiag .md-output rect{fill:color-mix(in srgb,var(--accent) 16%,var(--panel));stroke:var(--accent)}
+.mdiag path.md-edge{fill:none;stroke:var(--muted);stroke-width:1.4}
+.mdiag-wrap figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.strip-grid dt{font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0}
+.strip-grid dd{margin:2px 0 0;font-size:14px}
+.strip ul{margin:0;padding-left:18px;font-size:14px}
+.crit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px 20px}
+.crit-grid li{margin:0 0 6px}
+.kind{display:inline-block;font-size:11px;padding:0 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-right:4px;white-space:nowrap}
+.rt{font-size:12px;font-variant-numeric:tabular-nums}
+.rt td,.rt th{white-space:nowrap}
+.rt th{vertical-align:bottom;white-space:normal;min-width:90px;max-width:170px}
+.rt tr.rt-own td:first-child{font-weight:600}
+.rt .rt-anchor{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.rt th.rt-sort{cursor:pointer;user-select:none}
+.rt th.rt-sort:hover{color:var(--accent)}
+.rt .rt-arr{font-size:10px;font-weight:600;color:var(--accent);white-space:nowrap}
+.rt .rt-arr.muted{color:var(--muted);font-weight:400}
+.rt td.rt-wrap{white-space:normal;min-width:120px;max-width:260px}
+.rt-later{margin-bottom:10px}
+.rt td.rt-on{box-shadow:inset 2px 0 0 var(--accent)}
+#top-wrap th[data-top-col]:hover{color:var(--accent)}
+#top-wrap .rt-arr{font-size:10px;font-weight:600;color:var(--accent);margin-left:4px}
+#top-wrap .rt-arr.muted{color:var(--muted);font-weight:400}
+#top-wrap td.rt-on{box-shadow:inset 2px 0 0 var(--accent)}
+.takeaways{display:grid;gap:10px;padding-left:20px;max-width:80ch}
+.takeaways li{font-size:15px}
+mark{background:color-mix(in srgb,var(--accent) 20%,transparent);color:inherit;border-radius:3px;padding:0 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.slide .muted b{color:var(--fg);font-weight:600}
+details.more{display:inline;margin:0}
+details.more summary{display:inline;color:var(--accent);cursor:pointer;font-size:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;border-radius:0}
+.seg button.on{background:var(--accent);color:#fff}
+p.neg{background:var(--neg);padding:6px 8px;border-radius:6px}.verdict{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;background:var(--panel)}.verdict p{margin:6px 0}.bib-pre{max-height:320px;overflow:auto;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--panel)}.scope dd{margin:0 0 6px}
+.tools select{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
+.pcards{display:grid;gap:14px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:14px 16px}
+.pcard>header{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+.pcard>header h3{margin:0;font-size:15px;text-wrap:balance}
+.pcard>header h3 a{color:var(--fg);text-decoration:none}
+.pcard>header h3 a:hover{text-decoration:underline}
+.pcard>header .meta{font-size:12px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.pfields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px 22px}
+.pf{min-width:0}
+.pf.neg{background:var(--neg);border-radius:6px;padding:4px 6px}
+.pf.wide{grid-column:1/-1}
+.pf h4{margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pf h4 .st{margin-left:0;text-transform:none;letter-spacing:0}
+.pf p{margin:0;font-size:13px;max-width:75ch}
+.pf.wide p{color:var(--muted);font-size:12px;max-width:none}
+details.ev{margin:3px 0 0;font-size:12px}
+details.ev summary{cursor:pointer;color:var(--muted)}
+details.ev summary:hover{color:var(--accent)}
+table.cmp td.cp{width:15em;min-width:12em}
+table.cmp td.cp .t{display:block;font-weight:600}
+table.cmp td.cv{min-width:28ch}
+table.cmp td.cv>div{max-width:95ch}
+table.cmp td.ce{width:16em;font-size:12px}
+table.cmp th{cursor:default}
+/* Details-group rows: each cell clamps to 3 lines; clicking the row unfolds it */
+tr.cl{cursor:pointer}
+tr.cl .clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+tr.cl.open .clamp{display:block;-webkit-line-clamp:unset;line-clamp:none;overflow:visible}
+tr.cl.open>td:not(.neg){background:color-mix(in srgb,var(--accent) 5%,transparent)}
+/* Presentation (step 8): chapter plan and narration script */
+.pres-ch{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 14px;margin:12px 0}
+.pres-ch h3{margin:0 0 4px;font-size:15px}
+.pres-ch dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;margin:8px 0}
+.pres-ch dt{color:var(--muted)}
+.pres-ch dd{margin:0}
+.pres-scn td{vertical-align:top}
+.pres-scn td.nar{min-width:320px;max-width:640px}
+.pres-claim{font-size:11px;padding:0 5px;border-radius:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pres-claim.illustrative{border-style:dashed}
+/* Report tab: the ten sections of an applied-research review */
+.rp-toc{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+.rp-toc a{padding:3px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);text-decoration:none;color:var(--fg);font-size:13px}
+.rp-s{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:12px 16px;margin:12px 0}
+.rp-s h3{margin:0 0 2px;font-size:16px}.rp-s h4{margin:14px 0 4px;font-size:14px}.rp-q{margin:0 0 10px;color:var(--muted)}
+.rp-dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 16px;margin:8px 0}.rp-dl dt{color:var(--muted);font-weight:600}.rp-dl dd{margin:0}
+.rp-dl dd ol{margin:0;padding-left:20px}
+.rp-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.rp-cols ul{margin:4px 0;padding-left:18px}
+.rp-l{margin:6px 0;padding-left:22px}.rp-l li{margin:0 0 6px}
+.rp-refs a.id,.rp-refs .id{font-size:12px;margin-left:4px}
+.tg{display:inline-block;font-size:11px;font-weight:600;padding:0 6px;border-radius:4px;border:1px solid var(--muted);color:var(--muted);margin-right:6px;white-space:nowrap}
+.tg.ok{border-color:var(--ok);color:var(--ok)}.tg.bad{border-color:var(--bad);color:var(--bad)}.tg.ac{border-color:var(--accent);color:var(--accent)}.tg.gk{border-style:dashed}
+.rp-prop{border:2px dashed var(--c2);border-radius:8px;padding:8px 12px;margin:8px 0}
+.rp-fam{border-top:1px solid var(--line);padding-top:8px;margin-top:10px}.rp-fam:first-of-type{border-top:0}
+.rp-s td{max-width:none}.rp-s .wrap{margin:6px 0}
+.rp-miss{border-left:3px solid var(--warn);padding-left:8px}
+</style>
+<div class="app">
+<nav id="nav"><h1 id="title">Review hub</h1></nav>
+<main id="main"></main>
+<div id="tip" role="tooltip" hidden></div>
+</div>
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script>
+(function(){
+"use strict";
+var DATA = JSON.parse(document.getElementById('data').textContent);
+// tables written as interned columns (results; papers and datasets that are not included; discovery_links as a list):
+// rebuild them. String columns hold indexes into P.strings, author lists lists of indexes, repeated dicts an index into
+// P.values (each row gets its own copy), other flat dicts [shape, values...] (litrev _pack_results; _unpack_packed in Python)
+(function(){ var TB = DATA.tables || {}; Object.keys(TB).forEach(function(name){ var tb = TB[name], P = tb && tb.__packed__; if(!P) return;
+  var sc = {}, lc = {}, vc = {}, ob = P.objs || {}; P.str_cols.forEach(function(c){ sc[c]=1; }); (P.strlist_cols || []).forEach(function(c){ lc[c]=1; });
+  (P.val_cols || []).forEach(function(c){ vc[c]=1; });
+  Object.keys(ob).forEach(function(c){ ob[c].sk = {}; ob[c].str_keys.forEach(function(f){ ob[c].sk[f]=1; }); });
+  function dec(c, v){ if(sc[c]) return P.strings[v]; if(lc[c]) return v.map(function(j){ return P.strings[j]; });
+    if(vc[c]) return JSON.parse(JSON.stringify(P.values[v]));
+    if(!ob[c]) return v; var sh = ob[c].shapes[v[0]], d = {};
+    for(var j=0;j<sh.length;j++){ var x = v[j+1]; d[sh[j]] = (x!==null && ob[c].sk[sh[j]]) ? P.strings[x] : x; } return d; }
+  var out = P.list ? [] : {};
+  if(!P.list) Object.keys(tb).forEach(function(k){ if(k!=='__packed__') out[k]=tb[k]; });
+  P.rows.forEach(function(r){ var o = {}; for(var i=0;i<P.cols.length;i++){ var v=r[i]; if(v===null||v===undefined) continue; o[P.cols[i]] = dec(P.cols[i], v); } if(P.list) out.push(o); else out[o.id] = o; });
+  TB[name] = out; }); })();
+var T = DATA.tables, META = DATA.meta || {}, RANKS = DATA.ranks || {}, VAL = DATA.validation || {errors:[],warnings:[]};
+var TRIM = DATA.hub_trim || null;
+// the page size limit thins result rows off the KPI boards (litrev hub_results) and the records of papers and datasets
+// that are not included (HUB_PAGE_TIERS); the data files keep every row and field
+function trimNote(){ if(!TRIM) return ''; var gone=TRIM.rows_total-TRIM.rows_shown, parts=[];
+  if(gone>0) parts.push(gone+' of '+TRIM.rows_total+' result rows are not shown ('+(TRIM.omitted_excluded_target||0)+' on datasets or metrics the review did not describe, '+(TRIM.omitted_baseline||0)+' that re-report another paper\'s baseline)');
+  if(TRIM.quotes_trimmed) parts.push('rows off the KPI boards show no quote'+(TRIM.locations_cut?' and only the head of their location':''));
+  if(TRIM.reasons_cut) parts.push(TRIM.reasons_cut+' papers and datasets that are not included show only the start of their status reason');
+  if(TRIM.papers_slimmed) parts.push(TRIM.papers_slimmed+' papers that are not included show no link, authors, venue or citation count');
+  return parts.length?'<p class="muted">To keep this page under the 16 MB limit, '+esc(parts.join('; '))+'. The files in data/ and rendered/csv/ keep every row and field.</p>':''; }
+var RANK = DATA.ranking || {kpis:[],ranked:[],below_cut:[],unranked:[]}, FIGS = DATA.figures || {}, RTAB = DATA.result_tables || {}, SLIDE_GO = null;
+var SECTIONS = [
+  ['overview','Overview'],['explainers','Explainers'],['ranking','Ranking & clusters'],['coverage','Coverage'],['adjacent','Adjacent topics'],['decisions','Decisions'],['search_terms','Search terms'],['search_runs','Search runs'],['discovery_links','Discovery links'],
+  ['papers','Papers'],['tasks','Tasks'],['datasets','Datasets'],['benchmarks','Benchmarks'],['metrics','Metrics'],['results','Results'],['details','Method details']
+];
+// Sidebar: these stay top level; everything else folds into the "Details" group.
+var NAV_TOP = ['explainers','ranking','results','coverage','adjacent'], NAV_OPEN = null;
+var PRES = DATA.presentation || null;      // step 8, only when the person opted in and a plan was merged
+if(PRES&&PRES.plan){ SECTIONS.splice(5,0,['presentation','Presentation']); NAV_TOP.push('presentation'); }
+// the Report tab: the ten sections of an applied-research review (step 7), first in the sidebar
+var RSEC = (DATA.report_view||{}).sections || {};
+if(DATA.report_view){ SECTIONS.splice(1,0,['report','Report']); NAV_TOP.unshift('report'); }
+var NEG = {'not-found':1,'inaccessible':1,'not-reported':1,'not-applicable':1};
+var DETAIL_FIELDS = [['data','Data'],['representation','Representation'],['loss','Loss'],['topology','Architecture'],['training_scheme','Training scheme'],['evidence_limitations','Evidence limitations']];
+var DET={view:'cards',field:'loss',sort:'rank'};
+try{var dv=JSON.parse(localStorage.getItem('hub-details')||'null'); if(dv){DET.view=dv.view||DET.view; DET.field=dv.field||DET.field; DET.sort=dv.sort||DET.sort;}}catch(x){}
+function evFold(e){ if(!isEv(e)) return ''; var b=[];
+  if(e.location) b.push('<span class="muted">@ '+esc(e.location)+'</span>');
+  if(e.source){ b.push(/^https?:/.test(e.source)?'<a class="src" href="'+esc(e.source)+'" target="_blank" rel="noopener">source</a>':'<span class="src muted" title="'+esc(e.source)+'">cached text</span>'); }
+  if(e.quote) b.push('<span class="quote">“'+esc(e.quote)+'”</span>');
+  if(e.rationale) b.push('<span class="quote">'+esc(e.rationale)+'</span>');
+  return b.length?'<details class="ev"><summary>evidence</summary>'+b.join(' ')+'</details>':''; }
+function evBody(e){ return isEv(e)?(e.value==null?'<span class="muted">—</span>':fmtVal(e.value)):fmtVal(e); }
+function evBadge(e){ return isEv(e)?'<span class="st '+esc(e.status)+'">'+esc(e.status)+'</span>':''; }
+function paperHead(p){ var c=clusterOf(p.id);
+  return idLink(p.id)+' <h3>'+(httpUrl(p.url)?'<a href="'+esc(httpUrl(p.url))+'" target="_blank" rel="noopener">'+esc(p.title||p.id)+'</a>':esc(p.title||p.id))+'</h3>'
+    +'<span class="meta">'+esc([p.year,p.venue].filter(Boolean).join(' · '))+(c?' <span class="sw" style="background:'+famColor(c.id)+'"></span>'+esc(c.name||c.id):'')+'</span>'; }
+function detailCard(p){
+  return '<article class="pcard"><header>'+paperHead(p)+'</header><div class="pfields">'+DETAIL_FIELDS.map(function(f){ var e=p[f[0]], neg=isEv(e)&&NEG[e.status]===1;
+    return '<section class="pf'+(f[0]==='evidence_limitations'?' wide':'')+(neg?' neg':'')+'"><h4>'+esc(f[1])+evBadge(e)+'</h4><p>'+evBody(e)+'</p>'+evFold(e)+'</section>'; }).join('')+'</div></article>'; }
+function detailCompare(recs){ var f=DETAIL_FIELDS.filter(function(x){return x[0]===DET.field;})[0]||DETAIL_FIELDS[0];
+  return '<div class="wrap"><table class="cmp"><thead><tr><th>Paper</th><th>'+esc(f[1])+'</th><th>Evidence</th></tr></thead><tbody>'+recs.map(function(p){ var e=p[f[0]], neg=isEv(e)&&NEG[e.status]===1;
+    return '<tr class="cl" title="click to expand"><td class="cp">'+idLink(p.id)+'<span class="t">'+esc(shortTitle(p))+'</span><span class="muted">'+esc(p.year||'')+'</span></td><td class="cv'+(neg?' neg':'')+'"><div class="clamp">'+evBody(e)+'</div></td><td class="ce">'+evBadge(e)+evFold(e)+'</td></tr>'; }).join('')+'</tbody></table></div>'; }
+// Details shows the top-N ranked papers once step 6 has run; before that, every included paper
+function detailPapers(){ var top=(RANK.ranked||[]).map(function(r){return r.paper_id;});
+  return top.length?top.map(function(id){return PP[id];}).filter(Boolean):rows('papers').filter(function(p){return p.status==='included';}); }
+function detailsBody(all){ var q=state.q.toLowerCase(), recs=q?all.filter(function(r){return textOf(r).indexOf(q)>=0;}):all.slice();
+  var pos={}; (RANK.ranked||[]).forEach(function(r){pos[r.paper_id]=r.position;});
+  var key={rank:function(p){return pos[p.id]||1e9;},id:function(p){return p.id;},year:function(p){return -(p.year||0);},cluster:function(p){var c=clusterOf(p.id); return c?c.id:'~';}}[DET.sort]||function(p){return p.id;};
+  recs.sort(function(a,b){var x=key(a),y=key(b); return x<y?-1:x>y?1:(a.id<b.id?-1:1);});
+  return (DET.view==='compare'?detailCompare(recs):'<div class="pcards">'+recs.map(detailCard).join('')+'</div>')+'<p class="muted">'+recs.length+' papers</p>'; }
+function detailsPage(main){ var all=detailPapers(), n=(RANK.ranked||[]).length;
+  function save(){ try{localStorage.setItem('hub-details',JSON.stringify(DET));}catch(x){} }
+  main.innerHTML='<h2>Details</h2><p class="muted">'+(n?'Top '+n+' papers from <a href="#ranking">Ranking &amp; clusters</a>; the full included set is in the Papers table.':'All included papers (no ranking yet).')+'</p><div class="tools"><input type="search" id="q" placeholder="filter papers…" value="'+esc(state.q)+'">'
+    +'<span class="seg"><button data-v="cards"'+(DET.view==='cards'?' class="on"':'')+'>Cards</button><button data-v="compare"'+(DET.view==='compare'?' class="on"':'')+'>Compare one field</button></span>'
+    +(DET.view==='compare'?'<label>Field <select id="dfield">'+DETAIL_FIELDS.map(function(f){return '<option value="'+f[0]+'"'+(f[0]===DET.field?' selected':'')+'>'+esc(f[1])+'</option>';}).join('')+'</select></label>':'')
+    +'<label>Sort <select id="dsort">'+[['rank','rank'],['id','id'],['year','newest'],['cluster','cluster']].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===DET.sort?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></label></div><div id="dbody">'+detailsBody(all)+'</div>';
+  var qi=document.getElementById('q'); qi.oninput=function(){state.q=qi.value; document.getElementById('dbody').innerHTML=detailsBody(all);};
+  Array.prototype.forEach.call(main.querySelectorAll('.seg button'),function(b){b.onclick=function(){DET.view=b.getAttribute('data-v'); save(); detailsPage(main);};});
+  var fs=document.getElementById('dfield'); if(fs) fs.onchange=function(){DET.field=fs.value; save(); document.getElementById('dbody').innerHTML=detailsBody(all);};
+  document.getElementById('dsort').onchange=function(e){DET.sort=e.target.value; save(); document.getElementById('dbody').innerHTML=detailsBody(all);}; }
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+// a link target from paper metadata: http(s) only, so a 'javascript:' URL in an outside record cannot run on a click
+function httpUrl(u){ return /^https?:\/\//i.test(String(u==null?'':u))?String(u):''; }
+function rows(name){var t=T[name]; if(!t) return []; return Array.isArray(t)?t:Object.keys(t).map(function(k){return t[k];});}
+function isEv(v){return v&&typeof v==='object'&&!Array.isArray(v)&&('status' in v)&&('value' in v);}
+function idLink(v){ if(typeof v==='string'&&/^[QSPTDBMRCX]\d{3,}$/.test(v)){var sec={Q:'search_terms',S:'search_runs',P:'papers',T:'tasks',D:'datasets',B:'benchmarks',M:'metrics',R:'results',C:'ranking',X:'explainers'}[v[0]];return '<a class="id" href="#'+sec+'?q='+encodeURIComponent(v)+'">'+esc(v)+'</a>';} return null;}
+function fmtVal(v){
+  if(v==null) return '<span class="muted">—</span>';
+  var l=idLink(v); if(l) return l;
+  if(Array.isArray(v)) return v.map(fmtVal).join('; ');
+  if(typeof v==='object'){ return Object.keys(v).filter(function(k){return v[k]!=null&&v[k]!==''&&!(Array.isArray(v[k])&&!v[k].length);}).map(function(k){return '<span class="muted">'+esc(k)+'=</span>'+fmtVal(v[k]);}).join(' '); }
+  if(typeof v==='string'&&/^https?:\/\//.test(v)) return '<a href="'+esc(v)+'" target="_blank" rel="noopener">'+esc(v.replace(/^https?:\/\//,'').slice(0,60))+'</a>';
+  return esc(v);
+}
+function fmtEv(e){
+  var h=fmtVal(e.value)+'<span class="st '+esc(e.status)+'">'+esc(e.status)+'</span>';
+  if(e.source){ if(/^https?:/.test(e.source)) h+='<a class="src" href="'+esc(e.source)+'" target="_blank" rel="noopener">source</a>'; else h+='<span class="src muted" title="'+esc(e.source)+'">cached text</span>'; }
+  if(e.location) h+='<span class="muted"> @ '+esc(e.location)+'</span>';
+  if(e.quote) h+='<span class="quote">“'+esc(e.quote)+'”</span>';
+  if(e.rationale) h+='<span class="quote">'+esc(e.rationale)+'</span>';
+  return h;
+}
+function cell(v){ if(isEv(v)) return {h:fmtEv(v),neg:NEG[v.status]===1}; return {h:fmtVal(v),neg:false}; }
+function sortKey(v){ if(isEv(v)) v=v.value; if(v==null) return ''; if(typeof v==='number') return v; return String(Array.isArray(v)?v.join(' '):typeof v==='object'?JSON.stringify(v):v).toLowerCase(); }
+function textOf(r){ return JSON.stringify(r).toLowerCase(); }
+var state={sort:{},q:''};
+function table(name, recs, cols){
+  var q=state.q.toLowerCase(); if(q) recs=recs.filter(function(r){return textOf(r).indexOf(q)>=0;});
+  var s=state.sort[name]; if(s){ recs=recs.slice().sort(function(a,b){var x=sortKey(a[s.col]),y=sortKey(b[s.col]); if(x<y) return s.dir; if(x>y) return -s.dir; return 0;}); }
+  var h='<div class="wrap"><table><thead><tr>'+cols.map(function(c){var d=s&&s.col===c?(s.dir>0?' <span class="dir">▲</span>':' <span class="dir">▼</span>'):'';return '<th data-col="'+esc(c)+'">'+esc(c)+d+'</th>';}).join('')+'</tr></thead><tbody>';
+  recs.forEach(function(r){ h+='<tr class="cl" title="click to expand">'+cols.map(function(c){var x=cell(r[c]); return '<td'+(x.neg?' class="neg"':'')+'><div class="clamp">'+x.h+'</div></td>';}).join('')+'</tr>'; });
+  h+='</tbody></table></div><p class="muted">'+recs.length+' rows</p>'; return h;
+}
+function colsOf(recs){ var c=[]; recs.forEach(function(r){Object.keys(r).forEach(function(k){if(c.indexOf(k)<0)c.push(k);});}); return c; }
+function overview(){
+  var P=rows('papers'), inc=P.filter(function(p){return p.status==='included';}), exc=P.filter(function(p){return p.status==='excluded';});
+  var hist={}; ['papers','datasets','tasks','metrics','benchmarks'].forEach(function(t){rows(t).forEach(function(r){Object.keys(r).forEach(function(k){if(isEv(r[k])) hist[r[k].status]=(hist[r[k].status]||0)+1;});});});
+  rows('results').forEach(function(r){hist[r.status]=(hist[r.status]||0)+1;});
+  var h='<h2>'+esc(META.slug||'review')+'</h2><p>'+esc(META.purpose||'')+'<br><span class="muted">seed: '+esc(META.seed||'')+' · rendered '+esc(DATA.rendered_at||'')+' · caps: '+esc(JSON.stringify(META.caps||{}))+'</span></p>';
+  h+='<div class="cards">'+[['Included papers',inc.length],['Excluded',exc.length],['Candidates',P.length-inc.length-exc.length],['Search runs',rows('search_runs').length],['Tasks',rows('tasks').length],['Datasets',rows('datasets').length],['Benchmarks',rows('benchmarks').length],['Metrics',rows('metrics').length],['Results',(TRIM&&TRIM.rows_total)||rows('results').length]].map(function(x){return '<div class="card"><b>'+x[1]+'</b><span>'+esc(x[0])+'</span></div>';}).join('')+'</div>';
+  h+=trimNote();
+  h+=bibLink();
+  if(META.scope) h+='<p><b>Scope.</b> In: '+esc((META.scope['in']||[]).join('; '))+(META.scope.out&&META.scope.out.length?' &middot; Out: '+esc(META.scope.out.join('; ')):'')+' <a href="#decisions">Decisions</a>'+(ADJ?' &middot; <a href="#adjacent">Adjacent topics</a>':'')+'</p>';
+  h+='<h3>Evidence status histogram</h3><p>'+Object.keys(hist).sort().map(function(k){return '<span class="st '+esc(k)+'">'+esc(k)+' '+hist[k]+'</span>';}).join(' ')+'</p>';
+  h+='<h3>Validation</h3><p>'+VAL.errors.length+' errors, '+VAL.warnings.length+' warnings</p>';
+  if(VAL.errors.length) h+='<details><summary>Errors</summary><pre>'+esc(VAL.errors.join('\n'))+'</pre></details>';
+  if(VAL.warnings.length) h+='<details><summary>Warnings</summary><pre>'+esc(VAL.warnings.join('\n'))+'</pre></details>';
+  h+='<h3>Included papers</h3><ul>'+inc.sort(function(a,b){return (b.year||0)-(a.year||0);}).map(function(p){return '<li>'+idLink(p.id)+' ('+esc(p.year)+') '+pLink(p.id,p.title)+' <span class="muted">— '+esc(p.status_reason||'')+'</span></li>';}).join('')+'</ul>';
+  return h;
+}
+
+var DSN={}, MT={}, PP={};
+rows('datasets').forEach(function(d){DSN[d.id]=d.name;}); rows('benchmarks').forEach(function(b){DSN[b.id]=b.name;});
+rows('metrics').forEach(function(m){MT[m.id]=m;}); rows('papers').forEach(function(p){PP[p.id]=p;});
+var LB={metric:null,best:true,baselines:false,raw:false,ds:'',split:'',singles:false,at:0};
+try{var lbs=JSON.parse(localStorage.getItem('hub-lb')||'null'); if(lbs){LB.best=lbs.best!==false; LB.baselines=!!lbs.baselines; LB.metric=lbs.metric||null; LB.ds=lbs.ds||''; LB.split=lbs.split||''; LB.singles=!!lbs.singles;}}catch(x){}
+function saveLB(){try{localStorage.setItem('hub-lb',JSON.stringify({best:LB.best,baselines:LB.baselines,metric:LB.metric,ds:LB.ds,split:LB.split,singles:LB.singles}));}catch(x){}}
+function shortTitle(p){ if(!p) return ''; var t=String(p.title||p.id), i=t.indexOf(':'); if(i>1&&i<42) return t.slice(0,i); return t.length>52?t.slice(0,50)+'…':t; }
+function availOf(ev){ var v=ev&&ev.value; return (v&&v.availability)||'unknown'; }
+function normSplit(s){ var x=String(s==null?'':s).toLowerCase().replace(/\s+/g,' ').trim(); if(!x) return 'split not stated'; if(/same/.test(x)&&!/cross/.test(x)) return 'same-area'; if(/cross|different area|unseen area/.test(x)&&!/same/.test(x)) return 'cross-area'; return x; }
+function normVar(s){ return String(s==null?'':s).toLowerCase().replace(/\s+/g,' ').trim(); }
+function isBase(r){ return /\bbaseline (re-)?reported\b/i.test(String(r.caveats||'')); }
+function numVal(r){ var v=r.value; if(typeof v==='number') return v; if(typeof v==='string'&&/^-?\d+(\.\d+)?$/.test(v.trim())) return parseFloat(v); return null; }
+function lbRows(){ return rows('results').filter(function(r){ return numVal(r)!=null && (LB.baselines||!isBase(r)); }); }
+function metricList(){
+  var by={}; lbRows().forEach(function(r){ var m=r.metric_id; if(!m) return; by[m]=by[m]||{rows:0,papers:{}}; by[m].rows++; by[m].papers[r.paper_id]=1; });
+  return Object.keys(by).map(function(m){return {id:m,rows:by[m].rows,papers:Object.keys(by[m].papers).length};}).sort(function(a,b){return b.papers-a.papers||b.rows-a.rows;});
+}
+function boards(mid){
+  var M=MT[mid]||{}, hib=M.higher_is_better!==false, q=state.q.toLowerCase(), groups={};
+  lbRows().forEach(function(r){
+    if(r.metric_id!==mid) return; if(q&&textOf(r).indexOf(q)<0&&textOf(PP[r.paper_id]&&PP[r.paper_id].title||'').indexOf(q)<0) return;
+    var ds=r.dataset_id||r.benchmark_id||'', k=ds+'|'+normSplit(r.split)+'|'+normVar(r.metric_variant);
+    (groups[k]=groups[k]||{ds:ds,split:normSplit(r.split),variant:normVar(r.metric_variant),rows:[]}).rows.push(r);
+  });
+  return Object.keys(groups).map(function(k){
+    var g=groups[k], rs=g.rows;
+    if(LB.best){ var best={}; rs.forEach(function(r){ var key=r.paper_id+(isBase(r)?'|'+r.method_variant:''), cur=best[key]; if(!cur||(hib?numVal(r)>numVal(cur):numVal(r)<numVal(cur))) best[key]=r; }); rs=Object.keys(best).map(function(k){return best[k];}); }
+    rs=rs.slice().sort(function(a,b){return hib?numVal(b)-numVal(a):numVal(a)-numVal(b);});
+    var rank=0,prev=null; rs.forEach(function(r,i){ if(prev===null||numVal(r)!==prev){rank=i+1; prev=numVal(r);} r.__rank=rank; });
+    var papers={}, protos={}; rs.forEach(function(r){papers[r.paper_id]=1; protos[normVar(r.protocol)]=1;});
+    g.list=rs; g.nPapers=Object.keys(papers).length; g.nProtos=Object.keys(protos).length; return g;
+  }).sort(function(a,b){return b.nPapers-a.nPapers||b.list.length-a.list.length||String(DSN[a.ds]||a.ds).localeCompare(String(DSN[b.ds]||b.ds));});
+}
+function bTitle(g){ return (DSN[g.ds]||g.ds||'dataset not stated')+' · '+g.split+(g.variant?' · '+g.variant:''); }
+function boardHtml(g,mid,i,n){
+  var M=MT[mid]||{}, hib=M.higher_is_better!==false, units=(g.list[0]&&g.list[0].units)||'';
+  var nav='<span class="bnav">'+(i>0?'<a href="#" data-go="'+(i-1)+'">Previous</a>':'')+(i<n-1?'<a href="#" data-go="'+(i+1)+'">Next</a>':'')+'<a href="#" data-go="top">Index</a></span>';
+  var h='<section class="board" id="lb-b'+i+'">'+nav+'<h3>'+esc(bTitle(g))+'</h3>';
+  h+='<p class="sub"><span>Board '+(i+1)+' of '+n+'</span><span>'+(hib?'higher is better':'lower is better')+(units?' ('+esc(units)+')':'')+'</span><span>'+g.nPapers+' paper'+(g.nPapers>1?'s':'')+', '+g.list.length+' row'+(g.list.length>1?'s':'')+'</span>'+(g.nProtos>1?'<span class="warnline">'+g.nProtos+' different protocols: check the protocol column before comparing</span>':'')+'</p>';
+  h+='<div class="wrap"><table><thead><tr><th>#</th><th>Method</th><th>Paper</th><th>Value</th><th>Code · weights</th><th>Protocol</th><th>Source</th></tr></thead><tbody>';
+  g.list.forEach(function(r){
+    var p=PP[r.paper_id], c=availOf(p&&p.code), w=availOf(p&&p.checkpoint);
+    h+='<tr'+(r.__rank===1?' class="top"':'')+'><td class="rk">'+r.__rank+'</td><td>'+esc(r.method_variant||'')+(isBase(r)?' <span class="badge base">baseline, re-reported</span>':'')+'</td>';
+    h+='<td class="paper">'+idLink(r.paper_id)+' '+esc(shortTitle(p))+(p&&p.year?' <span class="muted">('+esc(p.year)+')</span>':'')+'</td>';
+    h+='<td class="val">'+esc(r.value)+(r.units?' <span class="muted">'+esc(r.units)+'</span>':'')+'</td>';
+    h+='<td><span class="avail"><span class="badge '+(c==='yes'?'yes':'')+'" title="code: '+esc(c)+'">code '+(c==='yes'?'yes':c==='no'?'no':'?')+'</span><span class="badge '+(w==='yes'?'yes':'')+'" title="weights: '+esc(w)+'">weights '+(w==='yes'?'yes':w==='no'?'no':'?')+'</span></span></td>';
+    var sp=r.split&&normSplit(r.split)!==String(r.split).toLowerCase().trim()?'<span class="muted">split: '+esc(r.split)+'. </span>':'';
+    h+='<td class="proto">'+sp+esc(r.protocol||'')+(r.caveats&&!isBase(r)?'<span class="quote">'+esc(r.caveats)+'</span>':'')+'</td>';
+    h+='<td class="srcc">'+idLink(r.id)+'<span class="loc" title="'+esc((r.location||'')+(r.quote?' — “'+r.quote+'”':''))+'">'+esc(r.location||'')+'</span></td></tr>';
+  });
+  return h+'</tbody></table></div></section>';
+}
+var CUR=[];
+function filteredBoards(mid){
+  return boards(mid).filter(function(g){ return (!LB.ds||g.ds===LB.ds)&&(!LB.split||g.split===LB.split); });
+}
+function indexHtml(list,offset,cls){
+  var by={}, order=[]; list.forEach(function(g,i){ var k=g.ds; if(!by[k]){by[k]=[]; order.push(k);} by[k].push([g,offset+i]); });
+  return order.map(function(k){ return '<span class="dsn">'+esc(DSN[k]||k||'dataset not stated')+'</span><span class="chips">'+by[k].map(function(x){var g=x[0], lab=g.split+(g.variant?' · '+g.variant:''); return '<a href="#" data-go="'+x[1]+'" class="'+cls+'" title="'+esc(bTitle(g))+' — '+g.nPapers+' paper(s)">'+esc(lab)+'<span class="n">'+g.nPapers+'</span></a>';}).join('')+'</span>';}).join('');
+}
+function boardsBody(){
+  var ms=metricList(); if(!ms.length){CUR=[]; return '<p class="muted">No numeric results.</p>';}
+  if(!LB.metric||!ms.some(function(m){return m.id===LB.metric;})) LB.metric=ms[0].id;
+  var mid=LB.metric, M=MT[mid]||{}, gs=filteredBoards(mid), multi=gs.filter(function(g){return g.nPapers>1;}), single=gs.filter(function(g){return g.nPapers<=1;});
+  var showS=LB.singles||!multi.length;
+  CUR=showS?multi.concat(single):multi; var n=CUR.length;
+  var def=M.definition&&M.definition.value;
+  var h='<p id="lb-top"><b>'+esc(M.name||mid)+'</b> '+idLink(mid)+(def?' <span class="muted">— '+esc(def)+'</span>':'')+'</p>';
+  if(!gs.length) return h+'<p class="muted">No boards match. Clear the filter, dataset or split.</p>';
+  h+='<p class="muted">'+multi.length+' leaderboard'+(multi.length===1?'':'s')+' with two or more papers'+(single.length?' · '+single.length+' single-paper board'+(single.length===1?'':'s')+' '+(showS?'shown below':'hidden'):'')+' · keys <span class="kbd">j</span>/<span class="kbd">k</span> next/previous board, <span class="kbd">[</span>/<span class="kbd">]</span> metric</p>';
+  if(n) h+='<div class="lb-index" role="navigation" aria-label="Boards">'+indexHtml(multi,0,'')+(showS?indexHtml(single,multi.length,'single'):'')+'</div>';
+  h+=CUR.map(function(g,i){return boardHtml(g,mid,i,n);}).join('');
+  return h;
+}
+function optList(arr,cur,allLabel){ return '<option value="">'+esc(allLabel)+'</option>'+arr.map(function(o){return '<option value="'+esc(o[0])+'"'+(o[0]===cur?' selected':'')+'>'+esc(o[1])+'</option>';}).join(''); }
+function barHtml(){
+  var ms=metricList(); if(!LB.metric||!ms.some(function(m){return m.id===LB.metric;})) LB.metric=ms.length?ms[0].id:null;
+  var all=LB.metric?boards(LB.metric):[], dsc={}, spc={};
+  all.forEach(function(g){ dsc[g.ds]=(dsc[g.ds]||0)+1; if(!LB.ds||g.ds===LB.ds) spc[g.split]=(spc[g.split]||0)+1; });
+  if(LB.ds&&!dsc[LB.ds]) LB.ds=''; if(LB.split&&!spc[LB.split]) LB.split='';
+  var mOpts=ms.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===LB.metric?' selected':'')+'>'+esc((MT[m.id]||{}).name||m.id)+' ('+m.papers+' papers)</option>';}).join('');
+  var dOpts=optList(Object.keys(dsc).sort(function(a,b){return dsc[b]-dsc[a];}).map(function(d){return [d,(DSN[d]||d||'not stated')+' ('+dsc[d]+')'];}),LB.ds,'All datasets');
+  var sOpts=optList(Object.keys(spc).sort(function(a,b){return spc[b]-spc[a];}).map(function(x){return [x,x+' ('+spc[x]+')'];}),LB.split,'All splits');
+  return '<button id="lb-prev" title="Previous metric ([)" aria-label="Previous metric">◀</button><select id="lb-m" aria-label="Metric">'+mOpts+'</select><button id="lb-next" title="Next metric (])" aria-label="Next metric">▶</button>'
+    +'<select id="lb-ds" class="ds" aria-label="Dataset">'+dOpts+'</select><select id="lb-sp" class="sp" aria-label="Split">'+sOpts+'</select>'
+    +'<input class="q" type="search" id="q" placeholder="Filter by method, paper or protocol" value="'+esc(state.q)+'">';
+}
+function goBoard(i){
+  if(i==='top'){ var t=document.getElementById('lb-top'); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  i=Math.max(0,Math.min(CUR.length-1,+i)); var b=document.getElementById('lb-b'+i); if(!b) return;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  b.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); LB.at=i;
+  b.classList.add('flash'); setTimeout(function(){b.classList.remove('flash');},900);
+}
+function currentBoard(){ var barh=(document.getElementById('lb-bar')||{offsetHeight:0}).offsetHeight, best=0; for(var i=0;i<CUR.length;i++){ var b=document.getElementById('lb-b'+i); if(!b||!b.offsetParent) continue; if(b.getBoundingClientRect().top-barh-20<=0) best=i; else break; } return best; }
+function leaderboardPage(main){
+  main.innerHTML='<h2>Results</h2>'+trimNote()+'<p class="muted">One leaderboard per metric. Rows are ranked only against rows with the same dataset, split and metric variant. Values are as printed by each paper, so protocols can still differ inside a board.</p>'
+   +'<div class="lb-bar" id="lb-bar"></div>'
+   +'<div class="lb-opts"><label><input type="checkbox" id="lb-best"'+(LB.best?' checked':'')+'> Best row per paper</label><label><input type="checkbox" id="lb-base"'+(LB.baselines?' checked':'')+'> Include baselines re-reported by other papers</label><label><input type="checkbox" id="lb-sg"'+(LB.singles?' checked':'')+'> Show single-paper boards</label><label><input type="checkbox" id="lb-raw"> Show all rows as one table</label></div>'
+   +'<div id="boards"></div>';
+  function sizeBar(){ var b=document.getElementById('lb-bar'); if(b) document.documentElement.style.setProperty('--barh',b.offsetHeight+'px'); }
+  function refresh(keepQ){
+    var bar=document.getElementById('lb-bar'), hadFocus=document.activeElement&&document.activeElement.id==='q', pos=hadFocus?document.activeElement.selectionStart:0;
+    bar.innerHTML=barHtml(); document.getElementById('boards').innerHTML=boardsBody(); saveLB(); sizeBar(); bindBar();
+    if(hadFocus){ var qi=document.getElementById('q'); qi.focus(); try{qi.setSelectionRange(pos,pos);}catch(x){} }
+  }
+  function setMetric(id){ LB.metric=id; LB.ds=''; LB.split=''; refresh(); var t=document.getElementById('lb-top'); if(t&&t.getBoundingClientRect().top<0) t.scrollIntoView({block:'start'}); }
+  function step(d){ var ms=metricList(), i=ms.map(function(m){return m.id;}).indexOf(LB.metric); if(!ms.length) return; setMetric(ms[(i+d+ms.length)%ms.length].id); }
+  function bindBar(){
+    document.getElementById('lb-m').onchange=function(e){setMetric(e.target.value);};
+    document.getElementById('lb-prev').onclick=function(){step(-1);}; document.getElementById('lb-next').onclick=function(){step(1);};
+    document.getElementById('lb-ds').onchange=function(e){LB.ds=e.target.value; LB.split=''; refresh();};
+    document.getElementById('lb-sp').onchange=function(e){LB.split=e.target.value; refresh();};
+    var qi=document.getElementById('q'); qi.oninput=function(){state.q=qi.value; refresh();};
+  }
+  document.getElementById('boards').onclick=function(e){ var a=e.target.closest&&e.target.closest('a[data-go]'); if(!a) return; e.preventDefault(); goBoard(a.getAttribute('data-go')); };
+  document.getElementById('lb-best').onchange=function(e){LB.best=e.target.checked; refresh();};
+  document.getElementById('lb-base').onchange=function(e){LB.baselines=e.target.checked; refresh();};
+  document.getElementById('lb-raw').onchange=function(e){LB.raw=e.target.checked; render();};
+  document.getElementById('lb-sg').onchange=function(e){LB.singles=e.target.checked; refresh();};
+  document.onkeydown=function(e){
+    if(!document.getElementById('lb-bar')) return; var t=e.target&&e.target.tagName; if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey) return;
+    if(e.key==='j'){e.preventDefault(); goBoard(currentBoard()+1);} else if(e.key==='k'){e.preventDefault(); goBoard(currentBoard()-1);}
+    else if(e.key===']'){e.preventDefault(); step(1);} else if(e.key==='['){e.preventDefault(); step(-1);}
+  };
+  window.onresize=sizeBar;
+  refresh();
+}
+function pTitle(pid){ var p=(T.papers||{})[pid]; return p?p.title:pid; }
+function kpiById(id){ return (META.kpis||[]).filter(function(k){return k.id===id;})[0]; }
+function kpiLabel(k){ if(!k) return ''; var tid=k.benchmark_id||k.dataset_id, tt=k.benchmark_id?T.benchmarks:T.datasets, e=tt&&tt[tid], m=(T.metrics||{})[k.metric_id]||{};
+  return (e?e.name:tid)+' · '+(m.name||k.metric_id)+' ('+dirText(m.higher_is_better)+') · splits: '+(k.splits||[]).map(function(s){return s==null?'(none)':s;}).join(', '); }
+var TOP_SORT={col:'#',dir:1};   // '#' = overall position; a KPI id = rank on that board (1 = best)
+function topOrder(R){
+  var st=TOP_SORT, idx=R.map(function(r,i){return i;});
+  if(st.col==='#') return (st.dir<0?idx.reverse():idx).map(function(i){return R[i];});
+  return idx.sort(function(i,j){ var a=R[i].per_kpi[st.col], b=R[j].per_kpi[st.col];
+    if(!a||!b) return !a&&!b?i-j:!a?1:-1;                                   // no result on this board: always last
+    return a.rank===b.rank?i-j:(a.rank-b.rank)*st.dir; }).map(function(i){return R[i];});
+}
+document.addEventListener('click',function(e){
+  var th=e.target.closest&&e.target.closest('th[data-top-col]'); if(!th) return;
+  var c=th.getAttribute('data-top-col'); TOP_SORT=TOP_SORT.col===c?{col:c,dir:-TOP_SORT.dir}:{col:c,dir:1};
+  var w=document.getElementById('top-wrap'), sl=w?w.scrollLeft:0, y=window.scrollY;
+  document.getElementById('main').innerHTML=rankingPage(); window.scrollTo(0,y);
+  var nw=document.getElementById('top-wrap'); if(nw) nw.scrollLeft=sl;
+});
+function rankingPage(){
+  var K=META.kpis||[];
+  if(!K.length) return '<h2>Ranking &amp; clusters</h2><p class="muted">Step 6 not run for this review: no KPIs set.</p>';
+  var cof={}; rows('clusters').forEach(function(c){(c.paper_ids||[]).forEach(function(pid){cof[pid]=c;});});
+  var h='<h2>Ranking &amp; clusters</h2><h3>KPIs</h3><ul>'+K.map(function(k){return '<li><b>'+esc(k.id)+'</b> '+esc(kpiLabel(k))+'<span class="quote">'+esc(k.rationale)+'</span></li>';}).join('')+'</ul>';
+  var st=TOP_SORT;
+  function arrow(c){ return st.col===c?'<span class="rt-arr">'+(c==='#'?(st.dir>0?'▼ overall':'▲ reversed'):(st.dir>0?'▼ best':'▲ worst'))+'</span>':'<span class="rt-arr muted">↕</span>'; }
+  h+='<h3>Top '+esc(RANK.top_n)+'</h3><p class="muted">Click a KPI header to sort by that board\'s rank (best first; click again to flip; papers with no result on it stay last); click # for the overall order.</p>'
+    +'<div class="wrap" id="top-wrap"><table><thead><tr><th data-top-col="#" title="Overall order">#'+arrow('#')+'</th><th>Paper</th><th>Venue</th><th>Best</th>'
+    +K.map(function(k){return '<th data-top-col="'+esc(k.id)+'" title="'+esc(kpiLabel(k))+' — sort by rank on this board"'+(st.col===k.id?' aria-sort="'+(st.dir>0?'descending':'ascending')+'"':'')+'>'+esc(k.id)+' '+arrow(k.id)+'</th>';}).join('')+'<th>Cluster</th></tr></thead><tbody>';
+  topOrder(RANK.ranked||[]).forEach(function(r){
+    h+='<tr><td>'+r.position+'</td><td>'+idLink(r.paper_id)+' '+esc(pTitle(r.paper_id))+'</td><td>'+venueText((T.papers||{})[r.paper_id])+'</td><td>'+r.best_rank+'/'+r.denominator+' on '+esc(r.best_kpi)+' <span class="muted">'+esc(r.method_variant||'variant not stated')+'</span></td>'
+      +K.map(function(k){var x=r.per_kpi[k.id]; return '<td'+(st.col===k.id?' class="rt-on"':'')+'>'+(x?x.rank+'/'+x.denominator+' · '+esc(kv(x)):'<span class="muted">—</span>')+'</td>';}).join('')
+      +'<td>'+(cof[r.paper_id]?idLink(cof[r.paper_id].id)+' '+esc(cof[r.paper_id].name):'<span class="muted">unclustered</span>')+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  var C=rows('clusters');
+  if(!C.length) return h+'<p class="muted">No clusters yet.</p>';
+  h+='<h3>Method clusters</h3><div class="clusters">'+C.map(function(c){
+    return '<div class="cluster"><h3>'+idLink(c.id)+' '+esc(c.name)+'</h3><p>'+esc((c.definition||{}).value||'')+'</p><p class="muted">'+esc(c.distinguishing_trait||'')+'</p><ul>'
+      +(c.members||[]).map(function(m){return '<li>'+idLink(m.paper_id)+' '+esc(pTitle(m.paper_id))+(m.paper_id===c.winner_paper_id?'<span class="badge">best</span>':'')+'<span class="quote">'+esc(m.rationale||'')+(m.quote?' — “'+esc(m.quote)+'”':'')+'</span></li>';}).join('')
+      +'</ul><p class="muted">'+esc(c.winner_reason||'')+'</p></div>';
+  }).join('')+'</div>';
+  return h;
+}
+function venueLabel(p){ var v=p&&p.published_venue; if(!isEv(v)||!v.value||['verified','author-reported','inferred'].indexOf(v.status)<0) return null;
+  var n=v.value.short||v.value.name; return v.value.year&&String(n).indexOf(String(v.value.year))<0?n+' '+v.value.year:n; }
+function venueText(p){ var l=venueLabel(p); return l?esc(l):(isEv(p&&p.published_venue)?'no venue found':'venue not looked up')+(p&&p.year?', '+esc(p.year):''); }
+function evText(e,o){ return isEv(e)&&e.value!=null?hl(e.value,e.emphasis,o):'<span class="muted">'+esc(isEv(e)?e.status:'missing')+'</span>'; }
+// Mark a long text's emphasis phrases (step 6 writes up to 3, each verbatim from the text): the first whole-word
+// occurrence of each, longest first, never overlapping, and only 1 of them in a text under 40 words, else 2
+// (_md_emph in litrev.py applies the same cap to REVIEW.md). Options: o.gl = {terms: glossTerms(x), seen: {}} also
+// marks the first occurrence on the slide of each glossary term (a tooltip gives its plain meaning); o.lead puts the
+// first sentence in bold; o.all marks every phrase given (the caller applied the cap to the whole text). A glossary
+// term inside a mark nests in it; one that crosses a mark's edge is left unmarked. The pieces are escaped, never the
+// marked-up string.
+var EMPH_SHORT_WORDS = 40;
+function emphCap(s){ return String(s).trim().split(/\s+/).length<EMPH_SHORT_WORDS?1:2; }
+function emphSpans(s,ph,cap){ var sp=[], w=/\w/;
+  (ph||[]).filter(function(p){return typeof p==='string'&&p;}).sort(function(a,b){return b.length-a.length;}).forEach(function(p){
+    if(sp.length>=cap) return;
+    for(var i=s.indexOf(p);i>=0;i=s.indexOf(p,i+1)){ var j=i+p.length;
+      if((i>0&&w.test(s[i-1]))||(j<s.length&&w.test(s[j]))||sp.some(function(r){return i<r[1]&&j>r[0];})) continue;
+      sp.push([i,j]); break; } });
+  return sp; }
+function hl(s,ph,o){
+  s=String(s==null?'':s); o=o||{}; var sp=emphSpans(s,ph,o.all?Infinity:emphCap(s)), gs=[], w=/\w/;
+  var ev=[];   // [position, order, html]: at one position closes (order < 0) come before opens, outer opens first
+  sp.forEach(function(r){ ev.push([r[0],1,'<mark>'],[r[1],-1,'</mark>']); });
+  if(o.gl){ var low=s.toLowerCase();
+    o.gl.terms.forEach(function(t){ if(o.gl.seen[t.key]) return; var best=null;
+      t.forms.forEach(function(f){ for(var i=low.indexOf(f);i>=0;i=low.indexOf(f,i+1)){ var j=i+f.length;
+          if(j<s.length&&/s/i.test(s[j])&&!(j+1<s.length&&w.test(s[j+1]))) j++;        // a plural: 'descriptors'
+          if((i>0&&w.test(s[i-1]))||(j<s.length&&w.test(s[j]))) continue;
+          if(gs.some(function(g){return i<g[1]&&j>g[0];})||sp.some(function(r){return i<r[1]&&j>r[0]&&!(i>=r[0]&&j<=r[1]);})) continue;
+          if(!best||i<best[0]) best=[i,j]; break; } });
+      if(best){ gs.push(best); o.gl.seen[t.key]=1;
+        ev.push([best[0],3,'<span class="gl" tabindex="0" data-tip="'+esc(t.term+': '+t.plain)+'">'],[best[1],-3,'</span>']); } }); }
+  if(o.lead){ var m=/^[\s\S]*?[.!?](?=\s|$)/.exec(s), k=m?m[0].length:s.length;
+    sp.concat(gs).forEach(function(r){ if(r[0]<k&&r[1]>k) k=r[1]; });                    // a span across the sentence end stays whole
+    if(k<s.length) ev.push([0,0,'<b class="claim">'],[k,-0.5,'</b>']); }
+  ev.sort(function(a,b){ return a[0]-b[0]||a[1]-b[1]; });
+  var out='',at=0; ev.forEach(function(e){ out+=esc(s.slice(at,e[0]))+e[2]; at=e[0]; });
+  return out+esc(s.slice(at));
+}
+// One explainer's glossary as match forms, longest first: 'top-down grid (BEV)' matches itself, 'top-down grid' or 'BEV'
+function glossTerms(x){
+  return (x.glossary||[]).filter(function(g){return g&&g.term&&g.plain;}).map(function(g,n){ var t=String(g.term).trim(), m=/^(.+?)\s*\(([^()]+)\)$/.exec(t);
+    var forms=[t].concat(m?[m[1],m[2]]:[]).map(function(f){return f.toLowerCase();}).filter(function(f,i,a){return f.length>1&&a.indexOf(f)===i;});
+    return {key:'g'+n, term:t, plain:String(g.plain), forms:forms.sort(function(a,b){return b.length-a.length;})}; })
+    .filter(function(t){return t.forms.length;}).sort(function(a,b){return b.forms[0].length-a.forms[0].length;});
+}
+function availLink(e,label){ var v=e&&e.value; if(v&&v.url&&/^https?:\/\//.test(v.url)) return '<a href="'+esc(v.url)+'" target="_blank" rel="noopener">'+label+'</a>'; return '<span class="muted">'+label+': '+esc((v&&v.availability)||'unknown')+'</span>'; }
+// The slide shows the short core text; the longer text behind each section and the long strips start collapsed
+function fold(title,body){ return body?'<details class="fold"><summary>'+esc(title)+'</summary>'+body+'</details>':''; }
+// Under each section: the writer's longer text (when there is one), then where the short text on the slide comes from
+function srcLine(e){ if(!isEv(e)) return '';
+  var b=['<span class="st '+esc(e.status)+'">'+esc(e.status)+'</span>'];
+  if(e.location) b.push('@ '+esc(e.location));
+  if(e.source) b.push(/^https?:/.test(e.source)?'<a class="src" href="'+esc(e.source)+'" target="_blank" rel="noopener">source</a>':'<span class="src" title="'+esc(e.source)+'">cached text</span>');
+  return '<p class="srcl">Source of the short text: '+b.join(' ')+(e.quote?'<span class="quote">“'+esc(e.quote)+'”</span>':'')+(e.rationale?'<span class="quote">'+esc(e.rationale)+'</span>':'')+'</p>'; }
+function moreDetail(core,e,o){ var d=isEv(e)&&e.value!=null, sl=srcLine(core); if(!d&&!sl) return '';
+  return '<details class="more-d"><summary>'+(d?'More detail and source':'Source')+'</summary>'
+    +(d?'<p>'+hl(e.value,e.emphasis,o)+(e.quote?'<span class="quote">“'+esc(e.quote)+'”'+(e.location?' @ '+esc(e.location):'')+'</span>':'')+'</p>':'')+sl+'</details>'; }
+// A KPI result as a short block: the value and the rank first, the board name under it (a bare "Ours" goes to the tooltip)
+function kpiBlock(q,k){ var b='<span class="muted kb">'+esc(kpiShort(k))+'</span>';
+  if(!q) return '<span class="kpib"><span class="muted">no result on this board</span>'+b+'</span>';
+  var v=String(q.method_variant||'').trim(), own=/^ours\.?$/i.test(v);
+  return '<span class="kpib"'+(own?' title="'+esc(v)+'"':'')+'><span><b>'+esc(kv(q))+'</b> <span class="kr">· rank '+esc(q.rank)+' of '+esc(q.denominator)+'</span>'
+    +(v&&!own?' <span class="muted">· '+esc(v)+'</span>':'')+'</span>'+b+'</span>'; }
+// The writer's method diagram (merge-explainers checked it: 3-8 boxes, known ids, no loop) as a layered SVG: a box's
+// column is its longest path from an input, boxes keep the writer's order inside a column, arrows run left to right;
+// an arrow that skips a column runs along a lane under the boxes, so it never passes behind a box
+function methodDiagram(d,key){
+  if(!d||!(d.nodes||[]).length) return '';
+  function lines(t){ var out=['']; String(t).split(/\s+/).forEach(function(w){ var l=out[out.length-1];
+    if(l&&(l+' '+w).length>19&&out.length<3) out.push(w); else out[out.length-1]=l?l+' '+w:w; }); return out; }
+  var N=d.nodes, E=d.edges||[], depth={}, pos={}, cols=[], LB={}, W=138, GX=30, GY=14;
+  N.forEach(function(n){ LB[n.id]=lines(n.label); });
+  var H=Math.max(46,18+15*Math.max.apply(null,N.map(function(n){return LB[n.id].length;})));   // 2 lines fit 46; a 3-line label grows every box
+  N.forEach(function(n){ depth[n.id]=0; });
+  N.forEach(function(){ E.forEach(function(e){ if(depth[e[1]]<depth[e[0]]+1) depth[e[1]]=depth[e[0]]+1; }); });
+  N.forEach(function(n){ (cols[depth[n.id]]=cols[depth[n.id]]||[]).push(n); });
+  cols=cols.filter(Boolean);
+  var rows=Math.max.apply(null,cols.map(function(c){return c.length;})), TW=cols.length*W+(cols.length-1)*GX, TB=rows*H+(rows-1)*GY;
+  var skip=E.some(function(e){return depth[e[1]]-depth[e[0]]>1;}), lane=TB+14, TH=TB+(skip?24:0);
+  cols.forEach(function(c,i){ var top=(TB-(c.length*H+(c.length-1)*GY))/2; c.forEach(function(n,j){ pos[n.id]={x:i*(W+GX),y:top+j*(H+GY)}; }); });
+  var mid='md-'+String(key||'x').replace(/\W/g,''), s='<svg class="mdiag" width="'+TW+'" viewBox="-2 -2 '+(TW+4)+' '+(TH+4)+'" style="width:100%;max-width:'+TW+'px;min-width:'+Math.min(TW,560)+'px" role="img" aria-label="Method diagram: '+esc(N.map(function(n){return n.label;}).join(', '))+'">'
+    +'<defs><marker id="'+mid+'" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--muted)"/></marker></defs>';
+  E.forEach(function(e){ var a=pos[e[0]], b=pos[e[1]]; if(!a||!b) return; var x1=a.x+W, y1=a.y+H/2, x2=b.x-3, y2=b.y+H/2, mx=(x1+x2)/2, g=GX/2;
+    var d=depth[e[1]]-depth[e[0]]>1
+      ? 'M'+x1+' '+y1+' C'+(x1+g)+' '+y1+' '+(x1+g)+' '+lane+' '+(x1+GX)+' '+lane+' L'+(x2-GX+3)+' '+lane+' C'+(x2-g)+' '+lane+' '+(x2-g)+' '+y2+' '+x2+' '+y2
+      : 'M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2;
+    s+='<path class="md-edge" d="'+d+'" marker-end="url(#'+mid+')"/>'; });
+  N.forEach(function(n){ var p=pos[n.id], k=n.kind||'step', L=LB[n.id];
+    s+='<g class="md-'+esc(k)+'"><title>'+esc(k+': '+n.label)+'</title><rect x="'+p.x+'" y="'+p.y+'" width="'+W+'" height="'+H+'" rx="'+(k==='step'?6:16)+'"/>'
+      +L.map(function(t,i){ return '<text x="'+(p.x+W/2)+'" y="'+(p.y+H/2+(i-(L.length-1)/2)*15+4)+'" text-anchor="middle">'+esc(t)+'</text>'; }).join('')+'</g>'; });
+  return '<figure class="mdiag-wrap"><div class="mdiag-scroll">'+s+'</svg></div><figcaption>The method in boxes, drawn from “How it works”. Dashed boxes are inputs; the coloured box is the output.</figcaption></figure>';
+}
+function slideHtml(x){
+  var c=(T.clusters||{})[x.cluster_id]||{}, p=(T.papers||{})[x.paper_id]||{}, f=FIGS[x.id]||{}, lab=(x.figure||{}).label||'figure';
+  var r=(RANK.ranked||[]).filter(function(r){return r.paper_id===x.paper_id;})[0], dx=x.details||{};
+  var K=[['problem','The problem'],['key_idea','Key idea'],['how_it_works','How it works'],['vs_siblings','How it differs from the rest of its cluster']];
+  // one glossary pass over the slide in reading order: the open texts first, the folded details last
+  var o={gl:{terms:glossTerms(x),seen:{}}}, core={}, more={};
+  K.forEach(function(k){ core[k[0]]=evText(x[k[0]],o); });
+  var crit=critiqueStrip(x,o);
+  K.forEach(function(k){ more[k[0]]=moreDetail(x[k[0]],dx[k[0]],o); });
+  var cm=/^((?:Figure|Fig\.?)\s*\d+[a-z]?\s*[.:]\s*)([\s\S]+)$/i.exec(f.caption||''), emb=!!f.src;   // keep "Figure 2." with its first sentence
+  var cap=!f.caption?'':cm?esc(cm[1])+briefText(cm[2]):briefText(f.caption);
+  var fig=emb?'<div class="sl-fig"><figure><img src="'+esc(f.src)+'" alt="'+esc(f.caption||lab)+'">'+(cap?'<figcaption>'+cap+'</figcaption>':'')+'</figure></div>':'';
+  var figNote=emb?'':httpUrl(f.link)?'<p class="fig-note">'+esc(lab)+' of the paper is not embedded ('+esc(f.note||'')+'). <a href="'+esc(httpUrl(f.link))+'" target="_blank" rel="noopener">Open '+esc(lab)+'</a>'+(cap?'<br>'+cap:'')+'</p>'
+    :'<p class="fig-note">No figure: '+esc(f.note||'not chosen')+'</p>';
+  var pline='<p class="pline"><span><span class="sw" style="background:'+famColor(c.id)+'"></span> '+esc(c.name||'')+'</span> <span class="sep">·</span> '
+    +'<span><b>'+pLink(x.paper_id,shortTitle(p)||x.paper_id)+'</b> ('+venueText(p)+')</span> <span class="ids">'+idLink(x.cluster_id)+' '+idLink(x.paper_id)+'</span></p>';
+  var gl=(x.glossary||[]).map(function(g){return '<div><dt>'+esc(g.term)+'</dt><dd>'+esc(g.plain)+'</dd></div>';}).join('');
+  var side='<div class="kpi"><span class="kl">Best KPI result</span>'+(r?kpiBlock(r.per_kpi[r.best_kpi],kpiById(r.best_kpi)):'<span class="muted">not ranked</span>')+'</div>'
+    +'<p class="links">'+availLink(p.code,'Code')+' · '+availLink(p.checkpoint,'Checkpoint')+'</p>'+figNote;
+  return '<article class="slide'+(emb?'':' slide-nofig')+'"><h2>'+esc(x.headline||p.title||x.paper_id)+'</h2>'+pline+methodDiagram(x.diagram,x.id)
+    +'<div class="sl-text"><dl>'+K.map(function(k){return '<dt>'+k[1]+'</dt><dd>'+core[k[0]]+more[k[0]]+'</dd>';}).join('')+'</dl>'+(emb?side:'')+'</div>'
+    +(emb?fig:'<div class="sl-side">'+side+'</div>')
+    +fold('Words on this slide ('+(x.glossary||[]).length+')', gl?'<dl class="gloss">'+gl+'</dl>':'')
+    +crit+fold('Results against other methods', resultsTable(x))+fold('In this review', reviewStrip(x,o))+'</article>';
+}
+function byId(a,b){return a.id<b.id?-1:a.id>b.id?1:0;}
+function famColor(cid){ var C=rows('clusters').slice().sort(byId), i=-1; C.forEach(function(c,j){if(c.id===cid)i=j;}); return (i<0||i>4)?'var(--muted)':'var(--c'+(i+1)+')'; }
+function clusterOf(pid){ var r=null; rows('clusters').forEach(function(c){ if((c.paper_ids||[]).indexOf(pid)>=0) r=c; }); return r; }
+function pShort(pid){ var s=shortTitle((T.papers||{})[pid])||pid; return s.length>20?s.slice(0,19)+'…':s; }
+function pLink(pid,txt){ return '<a href="#papers?q='+encodeURIComponent(pid)+'" title="'+esc(pid+' '+pTitle(pid))+'">'+esc(txt==null?pShort(pid):txt)+'</a>'; }
+function kpiShort(k){ if(!k) return ''; var tid=k.benchmark_id||k.dataset_id, tt=k.benchmark_id?T.benchmarks:T.datasets, e=tt&&tt[tid], m=(T.metrics||{})[k.metric_id]||{};
+  return (e?e.name:tid)+' · '+(m.name||k.metric_id)+(k.metric_variant?' ['+k.metric_variant+']':''); }
+function kv(q){ return q.raw_value!=null ? String(q.raw_value)+(q.units?' '+q.units:'') : String(q.value); }
+// A long text as its first sentence (cut at a word near 200 characters when longer than 220), the rest in a "more"
+// fold. The emphasis phrases are chosen on the whole text (its cap), a phrase across the cut moves the cut to its end,
+// then each part marks the ones inside it; o carries the slide's glossary pass.
+function briefText(t,ph,o){ t=String(t); var m=/^[\s\S]*?\.(\s|$)/.exec(t), k=m?m[0].length:t.length, cut=false, sp=emphSpans(t,ph,emphCap(t));
+  if(k>220){ k=t.slice(0,200).replace(/\s\S*$/,'').length; cut=true; }
+  sp.forEach(function(r){ if(r[0]<k&&r[1]>k){ k=r[1]; cut=true; } });
+  var rest=t.slice(k).trim();
+  function part(s,a,b){ return hl(s,sp.filter(function(r){return r[0]>=a&&r[1]<=b;}).map(function(r){return t.slice(r[0],r[1]);}),{gl:(o||{}).gl,all:1}); }
+  return part(t.slice(0,k).trim(),0,k)+(cut?'…':'')+(rest?' <details class="more"><summary>more</summary>'+part(rest,k,t.length)+'</details>':''); }
+function brief(e,o){ return !isEv(e)||e.value==null?evText(e):briefText(e.value,e.emphasis,o); }
+function dirText(h){ return h===true?'higher is better':h===false?'lower is better':'direction not set'; }
+function rankRow(pid){ return (RANK.ranked||[]).concat(RANK.below_cut||[]).filter(function(r){return r.paper_id===pid;})[0]; }
+// Round axis ticks (steps of 1, 2 or 5 × 10^n) inside [lo, hi], with the decimals the step needs
+function niceTicks(lo,hi){ var raw=(hi-lo)/3, mag=Math.pow(10,Math.floor(Math.log10(raw))), r=raw/mag, st=(r<1.5?1:r<3?2:r<7?5:10)*mag, v=[];
+  for(var t=Math.ceil(lo/st-1e-9)*st;t<=hi+1e-9;t+=st) v.push(Math.abs(t)<st/1e6?0:t);
+  return {v:v, dec:Math.max(0,-Math.floor(Math.log10(st)+1e-9))}; }
+function kpiPanel(k){
+  var pts=[]; (RANK.ranked||[]).concat(RANK.below_cut||[]).forEach(function(r){ var q=r.per_kpi[k.id]; if(q) pts.push({pid:r.paper_id,v:q.value,shown:kv(q),pct:/%|percent/i.test(q.units||''),rank:q.rank,den:q.denominator,variant:q.method_variant}); });
+  if(!pts.length) return '';
+  // ranking runs on one common scale (% rows / 100); draw the axis in percent when most rows were reported in percent
+  var f100=pts.filter(function(p){return p.pct;}).length*2>pts.length; if(f100) pts.forEach(function(p){p.v=p.v*100;});
+  pts.sort(function(a,b){return a.rank-b.rank;});
+  var vs=pts.map(function(p){return p.v;}), lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs), pad=(hi-lo)*0.15||Math.abs(hi)*0.1||0.01, v0=lo;
+  lo-=pad; hi+=pad; if(v0>=0&&lo<0) lo=0;                               // no axis below zero when every value is 0 or more
+  var tk=niceTicks(lo,hi);
+  var W=380,Lm=160,Rm=60,rowH=26,top=6,H=top+pts.length*rowH+24;
+  function x(v){return Lm+(v-lo)/(hi-lo)*(W-Lm-Rm);}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(kpiLabel(k))+'">';
+  tk.v.forEach(function(t){ var xx=x(t); s+='<line x1="'+xx+'" x2="'+xx+'" y1="'+top+'" y2="'+(H-20)+'" stroke="var(--line)" stroke-width="1"/><text x="'+xx+'" y="'+(H-6)+'" text-anchor="middle" fill="var(--muted)">'+t.toFixed(tk.dec)+(f100?'%':'')+'</text>'; });
+  pts.forEach(function(p,i){ var y=top+i*rowH+rowH/2, c=clusterOf(p.pid), xx=x(p.v);
+    s+='<g><title>'+esc(pTitle(p.pid))+' · '+esc(p.variant||'')+' = '+esc(p.shown)+' (rank '+p.rank+'/'+p.den+')</title>'
+      +'<a href="#papers?q='+encodeURIComponent(p.pid)+'"><text class="kpi-lab" x="'+(Lm-10)+'" y="'+(y+4)+'" text-anchor="end" fill="var(--accent)">'+esc(pShort(p.pid))+'</text></a>'
+      +'<circle cx="'+xx+'" cy="'+y+'" r="6" fill="'+(c?famColor(c.id):'var(--muted)')+'" stroke="var(--panel)" stroke-width="2"/>'
+      +'<text x="'+(xx+11)+'" y="'+(y+4)+'" fill="var(--muted)">'+esc(p.shown)+'</text></g>'; });
+  var dir=dirText(((T.metrics||{})[k.metric_id]||{}).higher_is_better);
+  return '<div><h4>'+esc(kpiShort(k))+' <span class="muted">('+dir+')</span></h4>'+s+'</svg></div>';
+}
+function overviewSlide(){
+  var C=rows('clusters').slice().sort(byId), K=META.kpis||[];
+  var fam=C.map(function(c){ var ms=(c.paper_ids||[]).slice().sort(function(a,b){var ra=rankRow(a),rb=rankRow(b);return (ra?ra.position:99)-(rb?rb.position:99);});
+    return '<div class="fam"><b><span class="sw" style="background:'+famColor(c.id)+'"></span>'+esc(c.name)+'</b><p class="muted">'+esc(c.distinguishing_trait||'')+'</p><ol>'
+      +ms.map(function(pid){var r=rankRow(pid); return '<li>'+pLink(pid)+(r?' <span class="muted">· overall #'+r.position+'</span>':'')+(pid===c.winner_paper_id?'<span class="badge">explained</span>':'')+'</li>';}).join('')+'</ol></div>'; }).join('');
+  var legend='<div class="legend">'+C.map(function(c){return '<span><span class="sw" style="background:'+famColor(c.id)+'"></span>'+esc(c.name)+'</span>';}).join('')+'</div>';
+  var unB=(RANK.unranked||[]).filter(function(u){return !u.role;}), unR=(RANK.unranked||[]).filter(function(u){return u.role;});
+  var un=(unB.length?'<details class="fold un"><summary>'+unB.length+' included paper'+(unB.length>1?'s are':' is')+' on no KPI board</summary><p class="muted">'+unB.map(function(u){return pLink(u.paper_id);}).join(', ')+'.</p></details>':'')
+    +(unR.length?'<p class="muted">Evaluation / benchmark studies (not ranked: their results belong to others\' methods): '+unR.map(function(u){return pLink(u.paper_id)+' ('+esc(u.role)+')';}).join(', ')+'.</p>':'');
+  return '<article class="slide slide-wide"><h2>What this review found</h2><p class="lede"><b>Review question.</b> '+esc(META.purpose||'')+'</p>'
+    +'<h3>'+C.length+' method families among the top '+((RANK.ranked||[]).length)+' papers</h3><div class="fam-grid">'+fam+'</div>'+un
+    +'<h3>How the families score</h3>'+legend+'<div class="kpi-grid">'+K.map(kpiPanel).join('')+'</div>'
+    +'<p class="muted">Each dot is one paper\'s best variant on that board, coloured by its method family. The next slides explain the best paper of each family. Full numbers are in <a href="#ranking">Ranking &amp; clusters</a>.</p></article>';
+}
+var RT_SORT = {};
+function rtOrder(t,st){
+  var idx=t.rows.map(function(r,i){return i;});
+  if(st.col<0) return st.dir<0?idx.reverse():idx;
+  var hib=t.columns[st.col].higher_is_better, sign=(hib===false?1:-1)*st.dir;   // dir 1 = best first
+  return idx.sort(function(i,j){ var a=t.rows[i].cells[st.col], b=t.rows[j].cells[st.col];
+    var av=a&&typeof a.value==='number'?a.value:null, bv=b&&typeof b.value==='number'?b.value:null;
+    if(av===null||bv===null) return av===null&&bv===null?i-j:av===null?1:-1;          // missing values always last
+    return av===bv?i-j:(av<bv?-sign:sign); });
+}
+function rtDefault(t){ var k=-1; t.columns.forEach(function(c,j){ if(c.anchor) k=j; }); return {col:k<0?0:k,dir:1}; }
+function resultsTable(x){
+  var t=RTAB[x.id], h='<section class="strip" id="rt-'+esc(x.id)+'"><h3>Results against other methods</h3>';
+  if(!t) return '';
+  if(!t.table) return h+'<p class="muted">'+esc(t.note)+'</p>'+laterHtml(t)+'</section>';
+  var st=RT_SORT[x.id]||(RT_SORT[x.id]=rtDefault(t));
+  function arrow(j){ if(st.col!==j) return '<span class="rt-arr muted">↕</span>'; return '<span class="rt-arr">'+(j<0?(st.dir>0?'paper order':'reversed'):t.columns[j].higher_is_better==null?(st.dir>0?'▼ high':'▲ low'):(st.dir>0?'▼ best':'▲ worst'))+'</span>'; }
+  function aria(j){ return st.col===j&&j>=0?' aria-sort="'+((st.dir>0)===(t.columns[j].higher_is_better!==false)?'descending':'ascending')+'"':''; }
+  var hd='<tr><th class="rt-sort" data-rt-x="'+esc(x.id)+'" data-rt-col="-1" title="Paper order">Method '+arrow(-1)+'</th>'+t.columns.map(function(c,j){return '<th class="rt-sort'+(c.anchor?' rt-anchor':'')+'" data-rt-x="'+esc(x.id)+'" data-rt-col="'+j+'"'+aria(j)+' title="Sort by this column (click again to flip)">'+esc(c.dataset)+'<br><span class="muted">'+esc(c.metric)
+    +(c.higher_is_better===true?' ↑':c.higher_is_better===false?' ↓':'')+(c.variant?' · '+esc(c.variant):'')+(c.split?' · '+esc(c.split):'')+'</span> '+arrow(j)+'</th>';}).join('')+'</tr>';
+  var bd=rtOrder(t,st).map(function(i){var r=t.rows[i]; return '<tr'+(r.own?' class="rt-own"':'')+'><td>'+(r.paper_id?'<a href="#papers?q='+encodeURIComponent(r.paper_id)+'" title="'+esc(r.paper_id+' '+(((T.papers||{})[r.paper_id]||{}).title||''))+'">'+esc(r.label)+'</a>'
+    :r.name?'<a class="rt-res" href="#results?raw=1&q='+encodeURIComponent(r.name)+'" title="No single paper in this review introduces '+esc(r.name)+': opens every result row naming it">'+esc(r.label)+'</a>':esc(r.label))+(r.own?'<span class="badge">this paper</span>':'')+(r.oracle?' <span class="muted">(oracle)</span>':'')+'</td>'
+    +r.cells.map(function(c,j){ if(!c) return '<td class="muted">—</td>'; var v=esc(c.value); return '<td class="'+(t.columns[j].anchor?'rt-anchor':'')+(st.col===j?' rt-on':'')+'" title="'+esc(c.result_id)+'">'+(c.best?'<b>'+v+'</b>':v)+'</td>';}).join('')+'</tr>';}).join('');
+  var more=[]; if(t.more_columns) more.push(t.more_columns+' more column'+(t.more_columns>1?'s':'')); if(t.more_rows) more.push(t.more_rows+' more row'+(t.more_rows>1?'s':''));
+  return h+'<p class="muted">From '+esc(t.table)+' of '+idLink(t.paper_id)+' ('+esc(t.why)+'). Rows marked <b>this paper</b> are its own methods; the others are <b>baselines it re-reports</b>, '
+    +'numbers as the paper prints them. A solid-underlined method name opens that method\'s paper in the Papers tab (matched by name); a dotted one matches no paper in the review, or more than one, and opens the Results tab filtered on that name.'+(t.common?' All cells: '+esc(t.common)+'.':'')+(t.units?' Units: '+esc(t.units)+'.':'')+' <b>Bold = best</b> in the column (oracle rows excluded)'+(t.columns.some(function(c){return c.anchor;})?'; the <b>highlighted column is the review KPI</b>.':'.')
+    +' <b>Click a column header</b> to sort by it (best first, or highest first where the metric has no better direction; click again to flip; empty cells stay last); click Method for the paper\'s order.</p>'
+    +'<div class="wrap"><table class="rt"><thead>'+hd+'</thead><tbody>'+bd+'</tbody></table></div>'
+    +(more.length?'<p class="muted">'+more.join(' and ')+' of '+esc(t.table)+' not shown; every row is in the <a href="#results?q='+encodeURIComponent(t.paper_id)+'">Results</a> tab.</p>':'')+laterHtml(t)+'</section>';
+}
+// arXiv ids encode the submission month: YYMM.NNNNN (2007+) or archive/YYMMNNN (older)
+function arxivDate(a){
+  var m=/^(\d{2})(\d{2})\.\d{4,5}/.exec(a||'')||/\/(\d{2})(\d{2})\d{3}/.exec(a||''); if(!m) return '';
+  var y=+m[1], mo=+m[2]; if(mo<1||mo>12) return '';
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo-1]+' '+(y<91?2000+y:1900+y);
+}
+function laterHtml(t){
+  var L=t.later||[]; if(!L.length) return '';
+  return '<h4>Later papers on the same benchmark</h4><p class="muted">For each review KPI board this paper is on: its own best row, then <b>every included paper that appeared after it</b> (newer arXiv id, else later year) with its best row on that board. '
+    +'The board groups rows the review treats as comparable, but their settings can still differ, so <b>read the Split and Setting columns</b> before treating two numbers as like-for-like. Rank is on the board across all included papers.</p>'
+    +L.map(function(b){
+      if(!b.n_later) return '<p class="muted">'+esc(b.label)+': no later paper in this review reports on this board.</p>';
+      return '<div class="wrap"><table class="rt rt-later"><thead><tr><th colspan="7">'+esc(b.label)+'</th></tr><tr><th>Paper</th><th>Date</th><th>Method</th><th>Split</th><th>Setting</th><th>Value</th><th>Board rank</th></tr></thead><tbody>'
+        +b.rows.map(function(e){ return '<tr'+(e.ref?' class="rt-own"':'')+'><td>'+idLink(e.paper_id)+' '+pLink(e.paper_id)+(e.ref?'<span class="badge">this slide</span>':'')+'</td><td'+(e.arxiv?' title="arXiv '+esc(e.arxiv)+'"':'')+'>'+esc(arxivDate(e.arxiv)||e.year||'')+'</td><td class="rt-wrap">'+esc(e.method_variant||'variant not stated')+'</td>'
+          +'<td class="rt-wrap">'+(e.split?esc(e.split):'<span class="muted">not stated</span>')+'</td><td class="rt-wrap">'+(e.metric_variant?esc(e.metric_variant):'<span class="muted">—</span>')+'</td>'
+          +'<td title="'+esc(e.result_id)+'">'+(e.rank===1?'<b>':'')+esc(e.value)+(e.units?' '+esc(e.units):'')+(e.rank===1?'</b>':'')+'</td><td>'+e.rank+'/'+e.denominator+'</td></tr>'; }).join('')
+        +'</tbody></table></div>'; }).join('');
+}
+// Clamped rows: a click unfolds/folds the row; links stay links, opening an evidence fold also unfolds, selecting text does nothing
+document.addEventListener('click',function(e){
+  var tr=e.target.closest&&e.target.closest('tr.cl'); if(!tr||e.target.closest('a')) return;
+  if(e.target.closest('summary')){ tr.classList.add('open'); return; }
+  if(String(window.getSelection&&window.getSelection())) return;
+  tr.classList.toggle('open'); tr.title=tr.classList.contains('open')?'click to collapse':'click to expand';
+});
+document.addEventListener('click',function(e){
+  var th=e.target.closest&&e.target.closest('th[data-rt-col]'); if(!th) return;
+  var id=th.getAttribute('data-rt-x'), col=+th.getAttribute('data-rt-col'), s=RT_SORT[id], x=(T.explainers||{})[id];
+  if(!x) return;
+  RT_SORT[id]=(s&&s.col===col)?{col:col,dir:-s.dir}:{col:col,dir:1};
+  var sec=document.getElementById('rt-'+id), wrap=sec&&sec.querySelector('.wrap'), sl=wrap?wrap.scrollLeft:0;
+  if(sec){ sec.outerHTML=resultsTable(x); var nw=document.getElementById('rt-'+id).querySelector('.wrap'); if(nw) nw.scrollLeft=sl; }
+});
+function critiqueStrip(x,o){
+  var dl=x.declared_limitations||[], wp=x.weak_points||[];
+  if(!dl.length&&!wp.length) return '<section class="strip"><h3>Limitations and weak points</h3><p class="muted">No critique yet. Step 6 writes it with the explainer (winner-critique subagent, then merge-explainers).</p></section>';
+  function src(e){ return (e.quote?'“'+esc(e.quote)+'”':'')+(e.location?' <span class="muted">@ '+esc(e.location)+'</span>':''); }
+  var d=dl.filter(function(e){return e.value!=null;});
+  var dh=d.length?'<ul>'+d.map(function(e){return '<li>'+hl(e.value,e.emphasis,o)+(e.quote?' <details class="more"><summary>quote</summary><span class="quote">'+src(e)+'</span></details>':'')+'</li>';}).join('')+'</ul>'
+    :'<p class="muted">'+(dl[0]&&dl[0].status==='not-reported'?'The paper states no limitations.':'No stated limitation could be quoted from the text'+(dl[0]&&dl[0].status?' ('+esc(dl[0].status)+')':'')+'.')+'</p>';
+  var wh=wp.length?'<ul>'+wp.map(function(e){return '<li><span class="kind">'+esc(e.kind||'other')+'</span>'+hl(e.value,e.emphasis,o)+' <details class="more"><summary>why</summary><span class="quote">'+esc(e.rationale||'')+(e.quote?'<br>'+src(e):'')+'</span></details></li>';}).join('')+'</ul>'
+    :'<p class="muted">none yet</p>';
+  return '<section class="strip"><h3>Limitations and weak points</h3><div class="crit-grid"><div><h4>Limitations the authors state</h4>'+dh+'</div>'
+    +'<div><h4>Weak points and shortcomings <span class="muted">(the reviewer\'s reading of the paper, not the authors\')</span></h4>'+wh+'</div></div></section>';
+}
+function reviewStrip(x,o){
+  var p=(T.papers||{})[x.paper_id]||{}, c=(T.clusters||{})[x.cluster_id]||{}, r=rankRow(x.paper_id), K=META.kpis||[];
+  var F=[['Data and supervision','data'],['Output','representation'],['Loss','loss'],['Architecture','topology'],['Training','training_scheme']];
+  var grid=F.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+brief(p[f[1]],o)+'</dd></div>';}).join('');
+  var kp=K.map(function(k){ return '<li>'+kpiBlock(r&&r.per_kpi[k.id],k)+'</li>'; }).join('');
+  var sib=(c.paper_ids||[]).filter(function(pid){return pid!==x.paper_id;}).map(function(pid){var sp=(T.papers||{})[pid]||{}, sr=rankRow(pid);
+    return '<li>'+idLink(pid)+' '+pLink(pid)+' <span class="muted">· '+(sr?'overall #'+sr.position+', best '+sr.best_rank+'/'+sr.denominator+' on '+esc(sr.best_kpi):'not ranked')+'</span> · '+availLink(sp.code,'Code')+' · '+availLink(sp.checkpoint,'Weights')+'</li>';}).join('');
+  return '<section class="strip"><h3>In this review</h3><dl class="strip-grid">'+grid+'</dl><h4>On the review\'s KPIs</h4><ul class="kpi-list">'+kp+'</ul>'
+    +(sib?'<h4>Other papers in this family</h4><ul>'+sib+'</ul>':'')+'</section>';
+}
+// Family ids in synthesis prose ("C002 (top-down search)") become the family's colour dot and name, linked to its slide
+var SLIDE_OF = {};
+function famRefs(h){ return String(h).replace(/\bC(\d{3,})\b(?: \(([^()<>]*)\))?/g,function(all,n,nm){ var id='C'+n, c=(T.clusters||{})[id];
+  if(!c||!SLIDE_OF[id]) return all;
+  return '<a class="famref" href="#explainers?s='+SLIDE_OF[id]+'" title="'+esc(id+' '+(c.name||''))+'"><span class="sw" style="background:'+famColor(id)+'"></span>'+(nm||id)+'</a>'; }); }
+function synthesisSlide(){
+  var syn=META.synthesis, X=rows('explainers').slice().sort(byId);
+  var head='<tr><th>Family</th><th>Best paper</th><th>Supervision and data</th><th>Prior or backbone</th><th>Output</th><th>Best KPI result</th><th>Code and weights</th></tr>';
+  var body=X.map(function(x){ var c=(T.clusters||{})[x.cluster_id]||{}, p=(T.papers||{})[x.paper_id]||{}, r=rankRow(x.paper_id), fc=x.facets||{};
+    function fct(k){return fc[k]?evText(fc[k]):'<span class="muted">—</span>';}
+    return '<tr><td><a class="famref famcell" href="#explainers?s='+(SLIDE_OF[c.id]||'')+'"><span class="sw" style="background:'+famColor(c.id)+'"></span> '+esc(c.name||'')+'</a></td><td>'+pLink(x.paper_id,shortTitle(p)||x.paper_id)+' <span class="muted">('+venueText(p)+')</span> '+idLink(x.paper_id)+'</td><td>'+fct('supervision')+'</td><td>'+fct('prior')+'</td><td>'+fct('output')+'</td><td>'
+      +(r?kpiBlock(r.per_kpi[r.best_kpi],kpiById(r.best_kpi)):'<span class="muted">not ranked</span>')+'</td><td>'+availLink(p.code,'Code')+' · '+availLink(p.checkpoint,'Weights')+'</td></tr>'; }).join('');
+  var tk=syn&&(syn.takeaways||[]).length?'<ol class="takeaways">'+syn.takeaways.map(function(t){
+      return '<li>'+famRefs(hl(t.text,t.emphasis,{lead:true}))+(t.detail?'<details class="more-d"><summary>More detail</summary><p>'+famRefs(esc(t.detail))+'</p></details>':'')+'<details><summary>Evidence</summary>'+(t.evidence||[]).map(function(e){return '<p>'+idLink(e.paper_id)+' '+pLink(e.paper_id)+'<span class="quote">“'+esc(e.quote)+'”'+(e.location?' @ '+esc(e.location):'')+'</span></p>';}).join('')
+        +(t.rationale?'<p class="muted">'+esc(t.rationale)+'</p>':'')+'</details></li>';}).join('')+'</ol>'
+    :'<p class="muted">No synthesis yet. Step 6 writes it after the explainers (synthesis-input, then merge-synthesis).</p>';
+  return '<article class="slide slide-wide"><h2>What the families add up to</h2><p class="lede"><b>Review question.</b> '+esc(META.purpose||'')+'</p>'
+    +'<div class="wrap"><table class="syn"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div><h3>Takeaways</h3>'+tk+limitationsSection()+'</article>';
+}
+// The problem x family matrix (merge-limitations): each cell rests on a quote from a family member (the authors' words)
+// or on the critique's reading (a rationale); outside-knowledge open problems are kept apart and labelled.
+var LIM_MARK={'affected author-reported':['●','authors','lc-aa','Affected: the authors say so'],'affected inferred':['◐','reviewer','lc-ai','Affected: the reviewer\'s reading'],
+  'addresses author-reported':['✓','addresses','lc-ad','The family addresses it']};
+// A matrix cell: its mark, and its evidence in data-tip for the page's own tooltip (#tip). The native title tooltip
+// did not show in the published hub, and no screenshot can show one.
+function limCell(x){ var m=LIM_MARK[(x&&x.state)+' '+(x&&x.basis)]; if(!m) return '<td class="lc lc-ns ftip" data-tip="Not shown in the evidence">—</td>';
+  var p=(T.papers||{})[x.paper_id], tip=m[3]+'\n'+x.paper_id+(p?' '+shortTitle(p):'')+(x.quote?': “'+x.quote+'”'+(x.location?' @ '+x.location:''):'')+(x.rationale?'\n'+x.rationale:'');
+  return '<td class="lc '+m[2]+' ftip" tabindex="0" data-tip="'+esc(tip)+'">'+m[0]+' '+m[1]+'</td>'; }
+// The .ftip tooltip: fixed to the window under the element (above it when there is no room), so the table's scroll
+// box does not clip it; the first line of data-tip is bold. Pointer, keyboard focus, scroll and Escape drive it.
+function tipShow(el){ var t=document.getElementById('tip'); if(!t) return;
+  t.innerHTML=el.getAttribute('data-tip').split('\n').map(function(s,i){ return i?esc(s):'<b>'+esc(s)+'</b>'; }).join('<br>'); t.hidden=false;
+  var r=el.getBoundingClientRect(), w=t.offsetWidth, h=t.offsetHeight, y=r.bottom+6;
+  if(y+h>innerHeight-8&&r.top-h-6>=8) y=r.top-h-6;
+  t.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))+'px'; t.style.top=y+'px'; }
+function tipHide(){ var t=document.getElementById('tip'); if(t) t.hidden=true; }
+function tipEl(e){ return e.target.closest&&e.target.closest('.ftip'); }
+document.addEventListener('mouseover',function(e){ var el=tipEl(e); if(el) tipShow(el); });
+document.addEventListener('mouseout',function(e){ var el=tipEl(e); if(el&&!el.contains(e.relatedTarget)) tipHide(); });
+document.addEventListener('focusin',function(e){ var el=tipEl(e); if(el) tipShow(el); });
+document.addEventListener('focusout',function(e){ if(tipEl(e)) tipHide(); });
+document.addEventListener('scroll',tipHide,true);
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') tipHide(); });
+window.addEventListener('hashchange',tipHide);
+function limitationsSection(){
+  var L=META.limitations, C=rows('clusters').slice().sort(byId);
+  if(!L||!(L.problems||[]).length) return '<section class="lim-sec"><h3>Limitations and problems of the current approaches</h3><p class="muted">No limitations section yet. Step 6 writes it after the explainers (limitations-input, then merge-limitations).</p></section>';
+  var b=L.basis||{};
+  function mark(c){ return LIM_MARK[(c&&c.state)+' '+(c&&c.basis)]; }
+  var head='<tr><th>Problem</th>'+C.map(function(c){return '<th class="lim-fam"><a class="famref famcell" href="#explainers?s='+(SLIDE_OF[c.id]||'')+'"><span class="sw" style="background:'+famColor(c.id)+'"></span> '+esc(c.name||c.id)+'</a></th>';}).join('')+'</tr>';
+  var body=L.problems.map(function(t){
+    return '<tr><td class="lim-p"><span class="kind">'+esc(t.kind||'other')+'</span><b>'+esc(t.title)+'</b></td>'+C.map(function(c){ return limCell((t.cells||{})[c.id]); }).join('')+'</tr>'; }).join('');
+  var list='<ol class="takeaways lim-list">'+L.problems.map(function(t){
+    var ev=C.map(function(c){ var x=(t.cells||{})[c.id], m=mark(x); if(!m) return '';
+      return '<p class="ev-cell"><a class="famref" href="#explainers?s='+(SLIDE_OF[c.id]||'')+'"><span class="sw" style="background:'+famColor(c.id)+'"></span>'+esc(c.id)+'</a> <span class="'+m[2]+'">'+m[0]+' '+esc(m[3])+'</span> · '+idLink(x.paper_id)+' '+pLink(x.paper_id)
+        +(x.quote?'<span class="quote">“'+esc(x.quote)+'”'+(x.location?' @ '+esc(x.location):'')+'</span>':'')+(x.rationale?'<span class="muted"> '+esc(x.rationale)+'</span>':'')+'</p>'; }).join('');
+    return '<li><b>'+esc(t.title)+'.</b> '+famRefs(hl(t.text,t.emphasis))+(t.detail?'<details class="more-d"><summary>More detail</summary><p>'+famRefs(esc(t.detail))+'</p></details>':'')
+      +'<details><summary>Evidence</summary>'+ev+'</details></li>'; }).join('')+'</ol>';
+  var op=(L.open_problems||[]).length?'<section class="lim-open"><h4>Open problems no reviewed approach solves</h4><p class="muted"><b>From general knowledge of the field, not from the reviewed papers.</b> No quote or source in this review checks these items.</p><ul class="takeaways">'
+    +L.open_problems.map(function(o){ var rel=(o.related||[]).map(function(id){ var k=-1; L.problems.forEach(function(t,j){ if(t.id===id) k=j; }); return k+1; }).filter(function(n){return n>0;});
+      return '<li><b>'+esc(o.title)+'.</b> '+famRefs(hl(o.text,o.emphasis))+(rel.length?' <span class="muted">(see problem'+(rel.length>1?'s ':' ')+rel.join(', ')+')</span>':'')+'</li>'; }).join('')+'</ul></section>':'';
+  return '<section class="lim-sec"><h3>Limitations and problems of the current approaches</h3><p class="muted">Based on the critiques of the '+(b.winners||0)+' family winners and the limitations that '+(b.members||0)+' other family members state in their own papers. Put the pointer on a cell to see its evidence. The Evidence fold under each problem gives the same quotes.</p>'
+    +'<div class="lim-legend"><span class="lc-aa">● affected: the authors say so</span><span class="lc-ai">◐ affected: the reviewer\'s reading</span><span class="lc-ad">✓ the family addresses it</span><span class="muted">— not shown in the evidence</span></div>'
+    +'<div class="wrap"><table class="syn lim"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+list+op+'</section>';
+}
+function slidesPage(main){
+  var X=rows('explainers').slice().sort(byId), S=[];
+  if((META.kpis||[]).length&&rows('clusters').length) S.push({k:'overview',t:'Overview'});
+  X.forEach(function(x){ var c=(T.clusters||{})[x.cluster_id]||{}; S.push({k:'x',x:x,t:c.name||x.id,c:c.id}); });
+  if(X.length) S.push({k:'synthesis',t:'Synthesis'});
+  if(!S.length){ main.innerHTML='<h2>Explainers</h2><p class="muted">No explainers yet. Step 6 writes one per method cluster.</p>'; return; }
+  var m=/s=(\d+)/.exec(location.hash), i=m?Math.min(S.length-1,Math.max(0,parseInt(m[1],10)-1)):0;
+  SLIDE_OF={}; S.forEach(function(s,j){ if(s.c) SLIDE_OF[s.c]=j+1; });
+  var steps='<div class="slide-steps">'+S.map(function(s,j){return '<a href="#explainers?s='+(j+1)+'"'+(j===i?' class="on"':'')+' title="'+esc(s.t)+'"><span class="n">'+(j+1)+'</span>'+(s.c?'<span class="sw" style="background:'+famColor(s.c)+'"></span>':'')+'<span class="nm">'+esc(s.t)+'</span></a>';}).join('')+'</div>';
+  var cur=S[i], body=cur.k==='overview'?overviewSlide():cur.k==='synthesis'?synthesisSlide():slideHtml(cur.x);
+  main.innerHTML='<div class="slide-nav"><button id="sl-prev">◀ Prev</button><span>'+(i+1)+' / '+S.length+'</span><button id="sl-next">Next ▶</button><span class="muted"><span class="kbd">←</span> <span class="kbd">→</span> to move</span><button id="sl-fold">Expand all</button></div>'+steps+body;
+  SLIDE_GO=function(d){ location.hash='#explainers?s='+(((i+d)%S.length+S.length)%S.length+1); };
+  document.getElementById('sl-prev').onclick=function(){SLIDE_GO(-1);};
+  document.getElementById('sl-next').onclick=function(){SLIDE_GO(1);};
+  document.getElementById('sl-fold').onclick=function(){ var open=this.textContent==='Expand all';
+    Array.prototype.forEach.call(main.querySelectorAll('.slide details'),function(d){ d.open=open; }); foldSync(); };
+  foldSync();
+}
+// "Expand all" turns into "Collapse all" when every fold on the slide is open, however they were opened
+function foldSync(){ var b=document.getElementById('sl-fold'); if(!b) return; var d=document.querySelectorAll('.slide details');
+  b.hidden=!d.length; b.textContent=d.length&&Array.prototype.every.call(d,function(e){return e.open;})?'Collapse all':'Expand all'; }
+document.addEventListener('toggle',function(e){ if(e.target.closest&&e.target.closest('.slide')) foldSync(); },true);
+// ---- coverage, decisions, bibtex ----
+var COV = DATA.coverage || null;
+function normT(s){ return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function poolText(pl){ if(!pl) return '<span class="muted">not in the pool</span>'; return idLink(pl.paper_id)+' '+esc(pl.status||'')+(pl.reason?' <span class="muted">- '+esc(pl.reason)+'</span>':''); }
+function viaText(v){ return (v||[]).map(function(x){return idLink(x.paper_id)+' <span class="muted">'+esc(x.direction)+'</span>';}).join(', '); }
+function viaFold(v){ v=v||[]; var a=v.filter(function(x){return x.direction==='cited-by';}).length, b=v.length-a; return '<details><summary>'+(a?'cited by '+a:'')+(a&&b?', ':'')+(b?'cites '+b:'')+'</summary>'+viaText(v)+'</details>'; }
+function lookup(q){
+  var t=String(q||'').trim(); if(!t) return '';
+  var ax=/^(?:arxiv:)?(\d{4}\.\d{4,5})(?:v\d+)?$/i.exec(t), nt=normT(t), P=rows('papers'), hit=null;
+  if(/^P\d{3,}$/i.test(t)) hit=(T.papers||{})[t.toUpperCase()]||null;
+  if(!hit&&ax) hit=P.filter(function(p){return String((p.ids||{}).arxiv||'').split('v')[0]===ax[1];})[0]||null;
+  if(!hit&&nt) hit=P.filter(function(p){return normT(p.title)===nt;})[0]||null;
+  if(hit){
+    var paths=(T.discovery_links||[]).filter(function(l){return l.paper_id===hit.id;}).map(function(l){var r=(T.search_runs||{})[l.run_id]||{}; return '<li>'+idLink(l.run_id)+' '+esc(r.kind||'')+'/'+esc(r.source||'')+(r.seed_paper_id?' from '+idLink(r.seed_paper_id):'')+' <span class="muted">'+esc(l.reason||'')+'</span></li>';}).join('');
+    return '<div class="verdict"><b>'+(hit.status==='included'?'In the review':'In the pool, not included')+'</b>: '+idLink(hit.id)+' '+esc(hit.title)+' ('+esc(hit.year||'')+')'
+      +(hit.status!=='included'?'<p>'+esc(hit.status)+': '+esc(hit.status_reason||'no reason recorded')+(hit.status==='candidate'?' <span class="muted">(never screened)</span>':'')+'</p>':'')
+      +(paths?'<p class="muted">Found by:</p><ul>'+paths+'</ul>':'<p class="muted">No discovery path recorded.</p>')+'</div>';
+  }
+  function m(e){ return (ax&&e.arxiv===ax[1])||(nt&&normT(e.title)===nt); }
+  var cands=[];
+  if(COV){ var n=(COV.neighbours||[]).filter(m)[0]; if(n) return '<div class="verdict"><b>Not in the pool, but linked to '+n.links+' included papers</b>: '+esc(n.title)+' ('+esc(n.year||'')+', '+esc(n.citations)+' citations)<p>'+viaText(n.via)+'</p><p class="muted">Rerun <code>coverage</code> to add it as a candidate, then screen it.</p></div>';
+    var sr=null; (COV.survey_refs||[]).forEach(function(sv){ sv.refs.forEach(function(e){ if(!sr&&m(e)) sr={e:e,s:sv}; }); });
+    if(sr) return '<div class="verdict"><b>Cited by survey '+idLink(sr.s.survey_id)+', never a candidate</b>: '+esc(sr.e.title)+' ('+esc(sr.e.year||'')+')</div>'; }
+  if(nt.length>=4){ P.forEach(function(p){ if(normT(p.title).indexOf(nt)>=0) cands.push(p); }); }
+  var h='<div class="verdict"><b>Not seen by this review.</b>';
+  if(cands.length) h+='<p>Did you mean: '+cands.slice(0,6).map(function(p){return idLink(p.id)+' '+esc(shortTitle(p))+' <span class="muted">('+esc(p.status)+')</span>';}).join('; ')+'</p>';
+  var g=(COV&&COV.gaps)||{}, notes=[];
+  (g.zero_ref_walks||[]).forEach(function(z){notes.push('Reference walk '+idLink(z.run_id)+' from '+idLink(z.paper_id)+' found 0 references');});
+  (g.skipped_terms||[]).forEach(function(x){notes.push('Term '+idLink(x.id)+' "'+esc(x.term)+'" was '+esc(x.status)+(x.reason?': '+esc(x.reason):''));});
+  if(!COV) notes.push('Coverage has not been run for this review.');
+  if(notes.length) h+='<p class="muted">Possible reasons:</p><ul>'+notes.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+  return h+'</div>';
+}
+function covTable(list, extra){
+  if(!list.length) return '<p class="muted">None.</p>';
+  return '<div class="wrap"><table><thead><tr><th>Paper</th><th>Year</th><th>Citations</th>'+(extra?'<th>Links</th><th>Included papers linked</th>':'')+'<th>In this review</th></tr></thead><tbody>'
+    +list.map(function(n){ var t=n.arxiv?'<a href="https://arxiv.org/abs/'+esc(n.arxiv)+'" target="_blank" rel="noopener">'+esc(n.title)+'</a>':esc(n.title);
+      return '<tr><td>'+t+'</td><td>'+esc(n.year||'')+'</td><td>'+esc(n.citations==null?'':n.citations)+'</td>'+(extra?'<td>'+n.links+'</td><td>'+viaFold(n.via)+'</td>':'')+'<td>'+poolText(n.pool)+'</td></tr>'; }).join('')+'</tbody></table></div>';
+}
+function coveragePage(main){
+  var h='<h2>Coverage</h2><p class="muted">Is a paper missing from this review, and why? Look it up, or scan the papers the review\'s citation graph points to.</p>'
+    +'<div class="tools"><input type="search" id="cov-q" placeholder="title, arXiv id or P id" value="'+esc(state.q)+'"><button id="cov-go">look up</button></div><div id="cov-res">'+lookup(state.q)+'</div>';
+  if(!COV){ main.innerHTML=h+'<p>Coverage has not been run yet. Run <code>litrev.py coverage --review &lt;dir&gt;</code>, then re-render.</p>'; bindCov(main); return; }
+  var showMan=!!state.covMan, nMan=0, open=function(l){ return l.filter(function(n){ if(n.pool&&n.pool.status==='included') return false; if(n.pool&&n.pool.manual&&n.pool.status==='excluded'){ nMan++; return showMan; } return true; }); };
+  h+='<p class="muted">Checked '+esc(COV.generated_at||'')+' against '+COV.included_count+' included papers; window from '+esc(COV.window_from)+'.</p>';
+  if((COV.failed||[]).length) h+='<p class="neg">Partial: '+COV.failed.length+' citation lists could not be fetched ('+COV.failed.map(function(f){return esc(f.paper_id)+' '+esc(f.direction);}).join(', ')+'). Rerun coverage later.</p>';
+  h+='<h3>Linked to at least '+COV.min_links+' included papers</h3><p class="muted">'+COV.neighbours_total+' works cite or are cited by several included papers; the top '+(COV.neighbours||[]).length+' by links, then citations. These are the likeliest missing papers.</p>'+covTable(open(COV.neighbours||[]),true);
+  (COV.survey_refs||[]).forEach(function(sv){ h+='<h3>Cited by survey '+idLink(sv.survey_id)+'</h3><p class="muted">'+esc(sv.title)+' - '+sv.total+' references; in-window ones not included, by citations.</p>'+covTable(open(sv.refs||[]),false); });
+  var g=COV.gaps||{}, gl=[];
+  (g.zero_ref_walks||[]).forEach(function(z){gl.push('Reference walk '+idLink(z.run_id)+' from '+idLink(z.paper_id)+' found nothing'+(z.limitations?' ('+esc(z.limitations)+')':''));});
+  (g.skipped_terms||[]).forEach(function(x){gl.push('Term '+idLink(x.id)+' "'+esc(x.term)+'" '+esc(x.status)+(x.reason?': '+esc(x.reason):''));});
+  h+='<p class="muted">'+(showMan?'Showing':'Hiding')+' '+nMan+' rows you already screened out by hand. <a href="#" id="cov-man">'+(showMan?'hide them':'show them')+'</a></p>';
+  h+='<h3>Search gaps</h3>'+(gl.length?'<ul>'+gl.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>':'<p class="muted">None.</p>');
+  main.innerHTML=h; bindCov(main);
+  var tm=document.getElementById('cov-man'); if(tm) tm.onclick=function(e){ e.preventDefault(); state.covMan=!showMan; var y=window.scrollY; coveragePage(main); window.scrollTo(0,y); };
+}
+function bindCov(main){ var q=document.getElementById('cov-q'), go=function(){ state.q=q.value; document.getElementById('cov-res').innerHTML=lookup(q.value); };
+  document.getElementById('cov-go').onclick=go; q.onkeydown=function(e){ if(e.key==='Enter') go(); }; }
+// ---- adjacent topics: the screened-out papers grouped by neighbouring research area (meta.adjacent) ----
+var ADJ = META.adjacent || null;
+function adjPapers(ids){ return (ids||[]).map(function(i){return PP[i];}).filter(function(p){return p&&p.status==='excluded';})
+  .sort(function(a,b){return (citOf(b)||0)-(citOf(a)||0)||(a.id<b.id?-1:1);}); }
+function citOf(p){ var c=p&&p.citations; return isEv(c)?c.value:c; }
+function adjTopics(){ return (ADJ.topics||[]).map(function(t){var o={}; Object.keys(t).forEach(function(k){o[k]=t[k];}); o.papers=adjPapers(t.paper_ids); return o;}).filter(function(t){return t.papers.length;}); }
+function adjTable(ps, q){
+  if(q) ps=ps.filter(function(p){return textOf({t:p.title,r:p.status_reason,y:p.year}).indexOf(q)>=0;});
+  if(!ps.length) return q?'<p class="muted">No match.</p>':'<p class="muted">None.</p>';
+  var row=function(p){ var t=httpUrl(p.url)?'<a href="'+esc(httpUrl(p.url))+'" target="_blank" rel="noopener">'+esc(p.title||p.id)+'</a>':esc(p.title||p.id);
+    return '<tr><td>'+idLink(p.id)+'</td><td>'+t+'</td><td class="c">'+esc(p.year||'')+'</td><td class="c">'+esc(citOf(p)==null?'':citOf(p))+'</td><td class="muted">'+esc(String(p.status_reason||'').replace(/^manual: /,''))+'</td></tr>'; };
+  var head='<div class="wrap"><table><thead><tr><th>Id</th><th>Paper</th><th>Year</th><th>Citations</th><th>Excluded because</th></tr></thead><tbody>', k=q?ps.length:8;
+  return head+ps.slice(0,k).map(row).join('')+'</tbody></table></div>'
+    +(ps.length>k?'<details><summary>'+(ps.length-k)+' more</summary>'+head+ps.slice(k).map(row).join('')+'</tbody></table></div></details>':'');
+}
+function adjacentBody(q){
+  var tops=adjTopics(), ins=adjPapers(ADJ.in_scope), nUn=(ADJ.unrelated||[]).length, max=Math.max.apply(null,tops.map(function(t){return t.papers.length;}).concat([ins.length,1]));
+  var bar=function(href,label,n,alt){return '<a href="#" data-to="'+href+'">'+esc(label)+'</a><div class="bar'+(alt?' alt':'')+'" style="width:'+(100*n/max).toFixed(1)+'%"></div><span class="n">'+n+'</span>';};
+  var h=q?'':'<div class="adj-map">'+tops.map(function(t){return bar('adj-'+t.id,t.name,t.papers.length);}).join('')+(ins.length?bar('adj-in','In scope, excluded for access or cap',ins.length,true):'')+'</div>';
+  tops.forEach(function(t){ var dr=(t.decision_refs||[]).map(esc).join(', ');
+    h+='<section class="adj" id="adj-'+esc(t.id)+'"><h3>'+esc(t.name)+' <span class="badge">'+t.papers.length+'</span></h3>'
+      +(t.definition?'<p>'+esc(t.definition)+'</p>':'')
+      +(t.relation?'<p class="muted"><b>Boundary.</b> '+esc(t.relation)+(t.scope_out?' <span class="badge">scope out: '+esc(t.scope_out)+'</span>':'')+(dr?' <a href="#decisions">'+dr+'</a>':'')+'</p>':'')
+      +adjTable(t.papers,q)+'</section>'; });
+  if(ins.length) h+='<section class="adj" id="adj-in"><h3>In scope, excluded for access or cap <span class="badge">'+ins.length+'</span></h3><p class="muted">These fit the scope but were left out for another reason: no readable full text, outside the year window or over the paper cap. They are part of the field itself, not a neighbouring one.</p>'+adjTable(ins,q)+'</section>';
+  if(!q&&nUn) h+='<p class="muted">'+nUn+' further excluded papers belong to no neighbouring area (other fields, generic tools) and are not listed here; they are in the Papers table.</p>';
+  return h;
+}
+function adjacentPage(main){
+  var h='<h2>Adjacent topics</h2><p class="muted">Research next to this review\'s scope that the search found and screened out, grouped by topic. Use it to see where the review\'s boundary lies and what sits on the other side; these papers were not read or judged on quality.</p>'+(TRIM&&(TRIM.reasons_cut||TRIM.papers_slimmed)?trimNote():'');
+  if(!ADJ){ main.innerHTML=h+'<p>Adjacent topics have not been grouped yet. Run <code>litrev.py adjacent-input</code>, the adjacent-topics subagent and <code>merge-adjacent</code>, then re-render.</p>'; return; }
+  var sc=META.scope; if(sc) h+='<p><b>In scope:</b> '+esc((sc['in']||[]).join('; '))+'</p>';
+  h+='<div class="tools"><input type="search" id="adj-q" placeholder="filter papers…" value="'+esc(state.q)+'"><span class="muted">grouped '+esc(ADJ.generated_at||'')+'</span></div><div id="adj-body">'+adjacentBody(state.q.toLowerCase())+'</div>';
+  main.innerHTML=h;
+  var qi=document.getElementById('adj-q'), body=document.getElementById('adj-body');
+  var bind=function(){ Array.prototype.forEach.call(body.querySelectorAll('a[data-to]'),function(a){a.onclick=function(e){e.preventDefault(); var el=document.getElementById(a.getAttribute('data-to')); if(el) el.scrollIntoView({behavior:'smooth'});};}); };
+  qi.oninput=function(){ state.q=qi.value; body.innerHTML=adjacentBody(state.q.toLowerCase()); bind(); }; bind();
+}
+function decisionsPage(){
+  var sc=META.scope, D=META.decisions||[], h='<h2>Decisions</h2><p class="muted">The scope agreed before the search, and every judgement call since, with its reason.</p>'+(TRIM&&TRIM.reasons_cut?trimNote():'');
+  if(sc){ h+='<div class="scope"><h3>Scope</h3><dl class="strip-grid"><dt>In</dt><dd>'+esc((sc['in']||[]).join('; '))+'</dd><dt>Out</dt><dd>'+esc((sc.out||[]).join('; ')||'(none)')+'</dd><dt>Protocol</dt><dd>'+esc((sc.protocol||[]).join('; ')||'(none)')+'</dd><dt>Agreed</dt><dd>'+esc(sc.agreed_on||'')+' by '+esc(sc.by||'')+(sc.notes?' - '+esc(sc.notes):'')+'</dd></dl></div>'; }
+  else h+='<p class="muted">No scope agreement recorded (<code>scope --in ... --out ...</code>).</p>';
+  h+='<h3>Decision log</h3>'+(D.length?'<div class="wrap"><table><thead><tr><th>Id</th><th>Date</th><th>Kind</th><th>Decision</th><th>Reason</th><th>Records</th><th>By</th></tr></thead><tbody>'
+    +D.map(function(d){return '<tr><td>'+esc(d.id)+'</td><td>'+esc(d.date)+'</td><td>'+esc(d.kind)+'</td><td>'+esc(d.decision)+'</td><td>'+esc(d.reason)+'</td><td>'+(d.refs||[]).map(function(r){return idLink(r)||esc(r);}).join(' ')+'</td><td>'+esc(d.by)+'</td></tr>';}).join('')+'</tbody></table></div>':'<p class="muted">No decisions logged (<code>decide --decision ... --reason ...</code>).</p>');
+  var man=rows('papers').filter(function(p){return p.manual;}), terms=rows('search_terms').filter(function(t){return ['out-of-scope','redundant','deferred'].indexOf(t.status)>=0;}), roles=rows('papers').filter(function(p){return p.paper_role&&p.paper_role!=='method';});
+  h+='<h3>Screened by hand ('+man.length+')</h3>'+(man.length?'<ul>'+man.map(function(p){return '<li>'+idLink(p.id)+' '+esc(shortTitle(p))+' - <b>'+esc(p.status)+'</b> <span class="muted">'+esc(String(p.status_reason||'').replace(/^manual: /,''))+'</span></li>';}).join('')+'</ul>':'<p class="muted">None.</p>');
+  h+='<h3>Search terms not run ('+terms.length+')</h3>'+(terms.length?'<ul>'+terms.map(function(t){return '<li>'+idLink(t.id)+' "'+esc(t.term)+'" - '+esc(t.status)+' <span class="muted">'+esc(t.status_reason||'')+'</span></li>';}).join('')+'</ul>':'<p class="muted">None.</p>');
+  if(roles.length) h+='<h3>Listed, not ranked ('+roles.length+')</h3><ul>'+roles.map(function(p){return '<li>'+idLink(p.id)+' '+esc(shortTitle(p))+' - '+esc(p.paper_role)+' <span class="muted">'+esc(p.paper_role_reason||'')+'</span></li>';}).join('')+'</ul>';
+  return h;
+}
+var BIB_STOP={a:1,an:1,the:1,on:1,of:1,towards:1,toward:1,'for':1,'in':1,to:1,and:1,'with':1};
+// url/doi from metadata: braces and backslashes percent-encoded so a '}' cannot end the field (litrev.py _bib_url)
+function bibUrl(s){ return String(s).replace(/\{/g,'%7B').replace(/\}/g,'%7D').replace(/\\/g,'%5C'); }
+function bibEsc(s){ return String(s).replace(/\\/g,'\u0000').replace(/([&%$#_{}])/g,'\\$1').replace(/~/g,'\u0001').replace(/\^/g,'\u0002').replace(/\u0000/g,'\\textbackslash{}').replace(/\u0001/g,'\\textasciitilde{}').replace(/\u0002/g,'\\textasciicircum{}'); }
+function asciiWord(s){ return String(s||'').normalize('NFKD').replace(/[^\x00-\x7f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function bibtexJS(){
+  var used={}, out=[];
+  rows('papers').filter(function(p){return p.status==='included';}).sort(byId).forEach(function(p){
+    var seen={}, au=(p.authors||[]).filter(function(a){ var k=asciiWord(a).split('').sort().join(''); if(!a||seen[k]) return false; seen[k]=1; return true; }), last=au.length?asciiWord(au[0].indexOf(',')>=0?au[0].split(',')[0]:au[0].split(/\s+/).pop()):'anon';
+    var words=String(p.title||'').split(/[\s:\-]+/).map(asciiWord), first=words.filter(function(w){return w&&!BIB_STOP[w];})[0]||'untitled';
+    var base=(last||'anon')+(p.year||'')+first, n=used[base]||0; used[base]=n+1; var key=base+(n?'abcdefghijklmnopqrstuvwxyz'[(n-1)%26]:'');
+    var ven=p.published_venue, v=(isEv(ven)&&(ven.status==='verified'||ven.status==='author-reported'))?ven.value:null, ids=p.ids||{}, et='misc';
+    var f=[['title','{'+bibEsc(p.title||'')+'}'],['author',au.map(bibEsc).join(' and ')],['year',p.year]];
+    if(v&&v.name){ et=v.kind==='journal'?'article':'inproceedings'; f.push([et==='article'?'journal':'booktitle',bibEsc(String(v.name).split('/')[0].trim())]); }
+    if(ids.arxiv){ f.push(['eprint',ids.arxiv],['archivePrefix','arXiv']); if((p.categories||[]).length) f.push(['primaryClass',p.categories[0]]); }
+    if(ids.doi&&String(ids.doi).toLowerCase().indexOf('10.48550/')!==0) f.push(['doi',bibUrl(ids.doi)]);
+    if(p.url) f.push(['url',bibUrl(p.url)]);
+    out.push('@'+et+'{'+key+',\n'+f.filter(function(x){return x[1]!=null&&x[1]!=='';}).map(function(x){return '  '+x[0]+' = {'+x[1]+'}';}).join(',\n')+'\n}\n');
+  });
+  return out.join('\n');
+}
+function bibLink(){ return '<p class="bib"><a href="#" class="bib-dl">Download BibTeX</a> <span class="muted">('+rows('papers').filter(function(p){return p.status==='included';}).length+' included papers)</span> <a href="#" class="bib-show">show</a> <span class="muted bib-note"></span></p><pre class="bib-pre" hidden></pre>'; }
+function bibSaveLocal(txt){ try{ var u=URL.createObjectURL(new Blob([txt],{type:'text/plain'})), d=document.createElement('a'); d.href=u; d.download=(META.slug||'review')+'.bib'; document.body.appendChild(d); d.click(); d.remove(); setTimeout(function(){URL.revokeObjectURL(u);},1000); }catch(x){} }
+function bindBib(){
+  // claude.ai viewers save through the `downloads` capability (.bib is not on its allowlist, so the file is <slug>.bib.txt);
+  // a hub opened as a local file falls back to a plain browser download. The text is shown either way, for copying.
+  Array.prototype.forEach.call(document.querySelectorAll('.bib-dl'),function(a){ a.onclick=function(e){ e.preventDefault(); var txt=bibtexJS(), pre=document.querySelector('.bib-pre');
+    if(pre){ pre.textContent=txt; pre.hidden=false; }
+    var C=window.claude; if(!(C&&C.use)){ bibSaveLocal(txt); return; }
+    C.use('downloads').then(function(dl){ if(!dl){ bibSaveLocal(txt); return; } return dl.save({filename:(META.slug||'review')+'.bib.txt', data:txt}); })
+      .catch(function(err){ if(err&&err.code==='declined') return; var n=document.querySelector('.bib-note'); if(n) n.textContent='Saving is not available here: copy the BibTeX below.'; }); }; });
+  Array.prototype.forEach.call(document.querySelectorAll('.bib-show'),function(a){ a.onclick=function(e){ e.preventDefault(); var pre=document.querySelector('.bib-pre'); if(pre){ pre.textContent=bibtexJS(); pre.hidden=!pre.hidden; } }; });
+}
+// ---- report (step 7): the ten sections of an applied-research review, from the review report and the section tables ----
+function repLink(r){ var l=idLink(r); if(l) return l;
+  var to=/^(TK|OP|L)\d+$/.test(r)?'explainers':/^K\d{3,}$/.test(r)?'ranking':/^DEC\d{3,}$/.test(r)?'decisions':/^A\d+$/.test(r)?'adjacent':null;
+  return to?'<a class="id" href="#'+to+'">'+esc(r)+'</a>':'<span class="id" data-rep="rep-'+esc(r)+'">'+esc(r)+'</span>'; }
+function repRefs(rs){ return (rs||[]).length?' <span class="rp-refs">'+rs.map(repLink).join(' ')+'</span>':''; }
+function repMissing(what){ return '<p class="muted rp-miss">'+esc(what)+' not written yet: run <code>report-input</code>, the report subagent, then <code>merge-report</code>.</p>'; }
+function repTable(head, body){ return '<div class="wrap"><table class="rp-t"><thead><tr>'+head.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+body.join('')+'</tbody></table></div>'; }
+function repList(items, tag){ return '<ol class="rp-l">'+(items||[]).map(function(x){ return '<li id="rep-'+esc(x.id)+'">'+(tag?tag(x):'')+esc(x.text)
+  +(x.basis==='outside-knowledge'?' <span class="tg gk">general knowledge, not from the reviewed papers</span>':'')+repRefs(x.refs)+'</li>'; }).join('')+'</ol>'; }
+function repKpi(r){ return r.kpi?' <span class="tg ac">KPI</span>':''; }
+function reportPage(main){
+  var RVW=DATA.report_view||{}, R=META.report||null, S=RVW.sections||{}, L=RVW.labels||{}, sc=META.scope||{}, s=RVW.search||{}, sm=RVW.summaries||{};
+  var sec=function(n, body){ var x=S[n]||['','']; return '<section class="rp-s" id="rep-s'+n+'"><h3>'+n+'. '+esc(x[0])+'</h3><p class="rp-q">'+esc(x[1])+'</p>'+body+'</section>'; };
+  var li=function(a){ return '<ul>'+(a||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'; };
+  var h='<h2>Review report</h2><p class="muted">The ten sections of an applied-research literature review. Tables come from the review data; the executive summary, requirements, unmeasured needs, conditions, gaps and roadmap come from the review report'
+    +(R?' (merged '+esc(R.merged_at||'')+')':'')+'. Every id links to its record.</p>';
+  h+='<div class="rp-toc">'+Object.keys(S).map(function(n){ return '<a href="#" data-rep="rep-s'+n+'">'+n+'. '+esc(S[n][0])+'</a>'; }).join('')+'<a href="#" data-rep="rep-app">Appendices</a></div>';
+  // 1
+  // the top-down verdict (since v1.35.0): which approach is better for which goal, on what principle
+  var V=(R&&R.verdict)||[], vd=V.length?'<h4>Which approach is better, for which goal, and why</h4>'+repTable(['Goal','Better choice','Why: the principle','Holds when','Support'], V.map(function(x){
+    return '<tr id="rep-'+esc(x.id)+'"><td>'+esc(x.goal)+'</td><td>'+esc(x.choice)+(x.cluster_ids||[]).map(function(c){ return ' '+idLink(c); }).join('')+'</td><td>'+esc(x.principle)+repRefs(x.refs)+'</td><td>'+esc(x.condition)+'</td><td>'+esc((L.support||{})[x.support]||x.support||'')+'</td></tr>'; })):'';
+  h+=sec(1, R&&R.executive_summary?'<dl class="rp-dl">'+Object.keys(L.exec||{}).map(function(k){ var x=R.executive_summary[k]||{}; return '<dt>'+esc(L.exec[k])+'</dt><dd>'+esc(x.text||'')+repRefs(x.refs)+'</dd>'; }).join('')+'</dl>'+vd:repMissing('The executive summary'));
+  // 2
+  var rq=R&&R.requirements;
+  h+=sec(2, '<p><b>Purpose.</b> '+esc(META.purpose||'')+'</p>'+(rq?'<dl class="rp-dl">'+Object.keys(L.req||{}).map(function(k){ return '<dt>'+esc(L.req[k])+'</dt><dd>'+(k==='research_questions'?'<ol>'+(rq[k]||[]).map(function(q){return '<li>'+esc(q)+'</li>';}).join('')+'</ol>':esc(rq[k]||''))+'</dd>'; }).join('')+'</dl>':repMissing('The requirements'))
+    +'<h4>Scope boundaries</h4><div class="rp-cols"><div><b>In scope</b>'+li(sc['in'])+'</div><div><b>Out of scope</b>'+li(sc.out)+'</div><div><b>Comparison rules</b>'+li(sc.protocol)+'</div></div><p class="muted">Scope changes and other judgement calls are on the <a href="#decisions">Decisions</a> page.</p>');
+  // 3
+  var t=s.terms||{}, w=s.walks||{}, c=s.criteria||{}, g=s.gaps||{};
+  h+=sec(3, '<p>A selective review, not a systematic one: keyword searches, citation walks, snowballing and a coverage check. Searches ran from '+esc(s.first_search||'?')+' to '+esc(s.last_search||'?')+'; '+esc(s.found)+' papers were found and '+esc(s.included)+' included after every candidate was screened against the scope.</p>'
+    +repTable(['Source','Runs'], (s.sources||[]).map(function(x){ return '<tr><td>'+esc(x.name)+'</td><td>'+esc(x.kinds.map(function(k){return k.n+' '+k.kind;}).join(', '))+'</td></tr>'; }))
+    +'<dl class="rp-dl"><dt>Search terms</dt><dd>'+esc(t.run)+' of '+esc(t.total)+' terms searched'+((t.examples||[]).length?'; for example '+t.examples.map(function(e){return '“'+esc(e)+'”';}).join(', '):'')+' (<a href="#search_terms">all terms</a>, <a href="#search_runs">runs</a>)</dd>'
+    +'<dt>Citation walks</dt><dd>'+esc(w.reference)+' reference walks, '+esc(w.citing)+' citing-paper walks'+(w.max_hop?', snowball to hop '+esc(w.max_hop)+(w.converged?' (converged)':' (not converged)'):'')+(w.coverage_check?', coverage check run':', no coverage check')+'; '+esc(w.surveys)+' surveys for the taxonomy</dd>'
+    +'<dt>Selection</dt><dd>'+esc(c['in'])+' scope items in, '+esc(c.out)+' out, '+esc(c.protocol)+' comparison rules'+(c.year_window?'; the last '+esc(c.year_window)+' years':'')+(c.paper_cap?'; at most '+esc(c.paper_cap)+' papers':'')+'</dd>'
+    +'<dt>Known gaps</dt><dd>'+esc(g.no_text)+' papers without a readable full text, '+esc(g.over_cap)+' over the paper cap, '+esc(g.never_screened)+' never screened, '+esc(g.terms_not_run)+' terms not run (<a href="#coverage">Coverage</a>)</dd></dl>'
+    +'<p class="muted">'+(RVW.flow||[]).map(function(f){return esc(f.label)+': '+esc(f.n);}).join(' · ')+'</p>');
+  // 4
+  var tk=(sm.tasks||{}).rows||[], F=RVW.families||[], FC=RVW.facets||[];
+  h+=sec(4, '<h4>Tasks</h4>'+(tk.length?repTable(['Task','What it is','Main test sets','Papers'], tk.map(function(r){ return '<tr><td>'+(idLink(r.id)||'')+' '+esc(r.name)+'</td><td>'+esc(r.definition||'')+'</td><td>'+esc((r.test_sets||[]).join(', '))+'</td><td>'+esc(r.papers)+'</td></tr>'; })):'<p class="muted">No tasks with included papers.</p>')
+    +'<h4>Method families</h4>'+(F.length?repTable(['Family','What it does'].concat(FC.map(function(f){return esc(f.charAt(0).toUpperCase()+f.slice(1));})).concat(['Papers','Best paper']), F.map(function(f){ return '<tr><td>'+(idLink(f.id)||'')+' '+esc(f.name)+'</td><td>'+esc(f.definition||'')+'</td>'+FC.map(function(k){return '<td>'+esc((f.facets||{})[k]||'')+'</td>';}).join('')+'<td>'+esc(f.members)+'</td><td>'+(f.winner?idLink(f.winner)+' '+esc(f.winner_short||''):'')+'</td></tr>'; })):'<p class="muted">No method families yet (step 6).</p>'));
+  // 5
+  var bm=(sm.benchmarks||{}).rows||[], mt=(sm.metrics||{}).rows||[];
+  h+=sec(5, '<p class="muted">A dataset is the data and its labels; a benchmark is a task and its rules on a dataset. KPI: a ranking board of this review uses it. Full records: <a href="#datasets">Datasets</a>, <a href="#benchmarks">Benchmarks</a>, <a href="#metrics">Metrics</a>.</p>'
+    +'<h4>Main test sets</h4>'+repTable(['Test set','Task','Main metric','Papers','Size','Real or synthetic','Access'], bm.map(function(r){ var f=r.facts||{}; return '<tr><td>'+(idLink(r.id)||'')+' '+esc(r.name)+repKpi(r)+(r.benchmark?' <span class="tg">benchmark</span>':'')+'</td><td>'+esc(r.task||'')+'</td><td>'+esc(r.metric||'')+'</td><td>'+esc(r.papers)+'</td><td>'+esc(f.size||'')+'</td><td>'+esc(f.origin||'')+'</td><td>'+esc(f.access||'')+'</td></tr>'; }))
+    +'<h4>Main metrics</h4>'+repTable(['Metric','What it measures','Better','Papers','Limitations'], mt.map(function(r){ return '<tr><td>'+(idLink(r.id)||'')+' '+esc(r.name)+repKpi(r)+'</td><td>'+esc(r.definition||'')+'</td><td>'+esc(r.direction||'')+'</td><td>'+esc(r.papers)+'</td><td>'+esc(r.limitations||'')+'</td></tr>'; }))
+    +'<h4>What the published benchmarks leave unmeasured</h4>'+(R&&R.unmeasured?repList(R.unmeasured):repMissing('This list')));
+  // 6
+  h+=sec(6, '<p class="muted">Each family\'s best paper on the five dimensions: data, representation, architecture, losses and training. Each family\'s slide is in <a href="#explainers">Explainers</a>; every paper\'s notes are in <a href="#details">Method details</a>.</p>'
+    +F.map(function(f){ var D2=f.dims||{}; return '<div class="rp-fam"><h4>'+(idLink(f.id)||'')+' '+esc(f.name)+'</h4><p>'+esc(f.headline||f.definition||'')+'</p>'
+      +(f.winner?'<p class="muted">Best paper: '+idLink(f.winner)+' '+esc(f.winner_short||'')+'</p>':'')
+      +(Object.keys(D2).length?repTable(['Dimension','Best paper'], Object.keys(L.dims||{}).filter(function(k){return D2[k];}).map(function(k){ return '<tr><td>'+esc(L.dims[k])+'</td><td>'+esc(D2[k])+'</td></tr>'; })):'')+'</div>'; }).join(''));
+  // 7
+  var pv=RVW.provenance||[], wk=RVW.weak_points||{kinds:[],rows:[]};
+  h+=sec(7, '<h4>Where the ranked numbers come from</h4><p class="muted">A review reads papers and runs nothing: no number here is reproduced. Boards: <a href="#ranking">Ranking &amp; clusters</a>; every row: <a href="#results">Results</a>.</p>'
+    +repTable(['KPI board','Papers','Reported by the paper','Verified on a leaderboard','Reproduced here'], pv.map(function(r){ return '<tr><td>'+esc(r.id)+' '+esc(r.label)+'</td><td>'+r.papers+'</td><td>'+r.reported+'</td><td>'+r.verified+'</td><td>'+r.reproduced+'</td></tr>'; }))
+    +'<h4>Weak points of each family\'s best paper</h4><p class="muted">The reviewer\'s reading (inferred), not the authors\' words; each one is on its family\'s slide.</p>'
+    +repTable(['Family · best paper'].concat(wk.kinds.map(esc)), wk.rows.map(function(r){ return '<tr><td>'+(idLink(r.id)||'')+' '+esc(r.winner||r.name)+'</td>'+wk.kinds.map(function(k){return '<td>'+(r.kinds[k]||'—')+'</td>';}).join('')+'</tr>'; }))
+    +'<h4>What works, under which conditions</h4>'+(R&&R.conditions?repList(R.conditions,function(x){ return x.kind==='unresolved'?'<span class="tg bad">unresolved</span>':'<span class="tg ok">works when</span>'; }):repMissing('This list')));
+  // 8
+  h+=sec(8, '<p class="muted">From code and weight availability only (<code>enrich</code>); licence, compute and domain fit are not assessed. "Not found" is not "none": nothing was found, which is not a verified absence.</p>'
+    +repTable(['Paper','Family','Code','Authors\' weights','Readiness'], (RVW.feasibility||[]).map(function(r){ return '<tr><td>'+idLink(r.id)+' '+esc(r.short)+' <span class="muted">'+esc(r.venue||r.year||'')+'</span></td><td>'+(r.cluster?idLink(r.cluster):'')+'</td><td>'+esc(r.code)+'</td><td>'+esc(r.weights)+'</td><td><b>'+esc(r.readiness)+'</b></td></tr>'; })));
+  // 9
+  var syn=(META.synthesis||{}).takeaways||[], lim=META.limitations||{};
+  h+=sec(9, '<h4>Takeaways</h4><ol class="rp-l">'+syn.map(function(x){ return '<li>'+esc(x.text)+'</li>'; }).join('')+'</ol>'
+    +'<h4>Problems several families share</h4><ul class="rp-l">'+(lim.problems||[]).map(function(p){ var n=Object.keys(p.cells||{}).filter(function(k){return (p.cells[k]||{}).state==='affected';}).length; return '<li><b>'+esc(p.id)+'</b> '+esc(p.title)+' <span class="tg">'+esc(p.kind||'')+'</span><span class="muted">'+n+' famil'+(n===1?'y':'ies')+' affected</span></li>'; }).join('')+'</ul><p class="muted">The problem × family matrix is on the synthesis slide in <a href="#explainers">Explainers</a>.</p>'
+    +'<h4>Gaps</h4>'+(R&&R.gaps?repList(R.gaps,function(x){ return '<span class="tg ac">'+esc((L.gaps||{})[x.type]||x.type)+'</span>'; }):repMissing('The gap list'))
+    +((lim.open_problems||[]).length?'<h4>Open problems</h4><p class="muted">From general knowledge of the field, not from the reviewed papers.</p><ol class="rp-l">'+lim.open_problems.map(function(o){ return '<li><b>'+esc(o.title)+'</b>: '+esc(o.text)+'</li>'; }).join('')+'</ol>':''));
+  // 10
+  var rm=R&&R.roadmap;
+  h+=sec(10, rm?'<div class="rp-prop"><span class="tg bad">proposed experiments, not conducted</span>'
+    +(rm.baseline?'<p><b>Baseline first:</b> '+idLink(rm.baseline.paper_id)+' '+esc(shortTitle(PP[rm.baseline.paper_id]))+': '+esc(rm.baseline.reason)+'</p>':'')
+    +'<p><b>Shortlist</b></p><ul class="rp-l">'+(rm.shortlist||[]).map(function(x){ return '<li>'+idLink(x.paper_id)+' '+esc(shortTitle(PP[x.paper_id]))+': '+esc(x.reason)+'</li>'; }).join('')+'</ul>'
+    +repTable(['Experiment','Question it resolves','Decision it supports','Data and implementation needs','Continue or stop when','Evidence'], (rm.experiments||[]).map(function(x){ return '<tr id="rep-'+esc(x.id)+'"><td><b>'+esc(x.id)+'</b> '+esc(x.experiment)+'</td><td>'+esc(x.question)+'</td><td>'+esc(x.decision)+'</td><td>'+esc(x.needs)+'</td><td>'+esc(x.criteria)+'</td><td>'+repRefs(x.refs)+'</td></tr>'; }))+'</div>':repMissing('The roadmap'));
+  h+='<section class="rp-s" id="rep-app"><h3>References and appendices</h3><p class="rp-q">The detailed records behind each section.</p><ul class="rp-l">'
+    +[['papers','Full paper matrix (with BibTeX)'],['details','Technical extraction: data, representation, architecture, losses, training'],['datasets','Dataset records'],['benchmarks','Benchmark records'],['metrics','Metric definitions'],['results','Every result row'],['search_terms','Search terms'],['search_runs','Search log'],['decisions','Selection decisions'],['coverage','Coverage check'],['adjacent','Excluded papers by neighbouring topic']]
+      .map(function(x){ return '<li><a href="#'+x[0]+'">'+esc(x[1])+'</a></li>'; }).join('')+'</ul></section>';
+  main.innerHTML=h;
+  Array.prototype.forEach.call(main.querySelectorAll('[data-rep]'),function(a){ a.onclick=function(e){ e.preventDefault(); var el=document.getElementById(a.getAttribute('data-rep')); if(el) el.scrollIntoView(); }; });
+}
+// ---- presentation (step 8): the chapter plan and the narration script the video is built from ----
+function fmtS(s){ s=Math.round(s||0); var m=Math.floor(s/60), r=s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; }
+function presRefs(rs){ return (rs||[]).map(function(r){ return idLink(r)||esc(r); }).join(', '); }
+function presVisual(v){ if(!v) return ''; var rv=(v.reveal||[]).map(function(x){ return 'after sentence '+((typeof x.at==='number')?x.at+1:'?')+': '+esc((x.show||[]).join(', ')); }).join('; ');
+  return '<b>'+esc(v.kind||'')+'</b> '+presRefs(v.refs)+(v.message?' <span class="muted">'+esc(v.message)+'</span>':'')+(rv?'<br><span class="muted">'+rv+'</span>':''); }
+function presChapter(c, sc){ var ev=c.evidence||{}, eg=c.engagement, dd=c.deep_dive, AU=PRES.audio||{}, AS=AU.start_s||{}, rec=(AU.chapters||{})[c.id];
+  var f=function(k,v){ return v?'<dt>'+k+'</dt><dd>'+v+'</dd>':''; };
+  var h='<section class="pres-ch" id="pres-'+esc(c.id)+'"><h3>'+esc(c.id)+' '+esc(c.title||'')+' <span class="muted">'+fmtS(c.start_s)+'\u2013'+fmtS(c.end_s)+' ('+(c.end_s-c.start_s)+' s'+(rec?'; recorded '+fmtS(rec.dur)+', '+(rec.drift>0?'+':'')+Math.round(rec.drift*100)+'%':'')+')</span></h3>'
+    +'<p><b>'+esc(c.question||'')+'</b></p><p>'+esc(c.takeaway||'')+'</p>'
+    +'<details><summary>Chapter card</summary><dl>'+(c.sections?f('Review sections',(c.sections||[]).map(function(n){return esc(n+' '+((RSEC[n]||[])[0]||''));}).join('; ')):f('Functions',esc((c.functions||[]).join(', '))))
+    +f('Data scenes',esc((c.summaries||[]).join(', ')))+f('Prior knowledge',esc(c.prior_knowledge))
+    +f('Explanation',esc(c.explanation))+f('Supporting evidence',presRefs(ev.supporting))+f('Challenging evidence',presRefs(ev.challenging))
+    +f('Comparability',esc(c.comparability))+f('Families',presRefs(c.cluster_ids))+f('Deep dive',dd?idLink(dd.paper_id)+' '+esc(dd.reason):'')
+    +f('Visual',presVisual(c.visual))+f('Visual sequence',esc(c.visual_sequence))+f('Example or analogy',esc(c.example))
+    +f('Engagement',eg?esc(eg.kind)+': '+esc(eg.prompt||''):'')+f('Transition',esc(c.transition))+'</dl></details>';
+  if(!sc){ return h+'<p class="muted">Script not written yet.</p></section>'; }
+  h+='<details open><summary>Script: '+sc.scenes.length+(sc.scenes.length===1?' scene, ':' scenes, ')+sc.words+' words, about '+fmtS(sc.est_s)+'</summary><div class="wrap"><table class="pres-scn"><thead><tr><th>Time</th><th>Narration</th><th>Visual</th><th>Sources</th><th>Claim</th></tr></thead><tbody>'
+    +sc.scenes.map(function(s){ return '<tr><td>'+fmtS(AS[s.id]!=null?AS[s.id]:s.start_s)+'</td><td class="nar">'+(s.narration||[]).map(esc).join(' ')+(s.on_screen?'<br><span class="muted">On screen: '+esc(s.on_screen)+'</span>':'')+'</td><td>'+presVisual(s.visual)+'</td><td>'+presRefs(s.sources)+'</td><td><span class="pres-claim '+esc(s.claim_type)+'">'+esc(s.claim_type)+'</span>'+(s.engagement?' <span class="badge">'+esc(s.engagement.kind||'')+'</span>':'')+'</td></tr>'; }).join('')
+    +'</tbody></table></div></details>';
+  return h+'</section>'; }
+function presentationPage(main){ var P=PRES.plan, S=PRES.script||{}, ex=P.recurring_example||{}, lex=PRES.lexicon||{};
+  var nS=P.chapters.filter(function(c){return S[c.id];}).length;
+  var AU=PRES.audio||null;
+  var h='<h2>Presentation</h2><p class="muted">The plan and the narration script for a '+esc(P.minutes)+'-minute narrated video of this review (step 8). Scripts written: '+nS+' of '+P.chapters.length+' chapters. '+(AU?'Recorded narration: '+fmtS(AU.total_s)+' for a '+fmtS(AU.target_s)+' plan (voice '+esc(AU.voice)+'); script times are the recorded ones'+((AU.flags||[]).length?'; '+AU.flags.length+' scene(s) flagged by the voice check':'')+'.':'Times in the script are estimates from the spoken word count; the recorded audio sets the final times.')+'</p>';
+  h+='<p><b>Audience.</b> '+esc(P.audience||'')+'</p>'+(P.outcome?'<p><b>Outcome.</b> '+esc(P.outcome)+'</p>':'')
+    +'<p><b>Organizing axis.</b> '+esc(P.organizing_axis||'')+(P.axis_reason?' <span class="muted">'+esc(P.axis_reason)+'</span>':'')+'</p>'
+    +'<p><b>Headline answer.</b></p><ul>'+(P.headline_answer||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'
+    +(ex.text?'<p><b>Recurring example'+(ex.illustrative?' (illustrative)':'')+'.</b> '+esc(ex.text)+'</p>':'');
+  h+='<div class="wrap"><table><thead><tr><th>Time</th><th>Chapter</th><th>Question</th><th>Visual</th><th>Engagement</th><th>Script</th></tr></thead><tbody>'
+    +P.chapters.map(function(c){ var v=c.visual||{}; return '<tr><td>'+fmtS(c.start_s)+'\u2013'+fmtS(c.end_s)+'</td><td><a href="#" data-pres="'+esc(c.id)+'">'+esc(c.id)+' '+esc(c.title||'')+'</a></td><td>'+esc(c.question||'')+'</td><td>'+esc(v.kind||'')+'</td><td>'+esc((c.engagement||{}).kind||'')+'</td><td>'+(S[c.id]?S[c.id].scenes.length+(S[c.id].scenes.length===1?' scene':' scenes'):'<span class="muted">not yet</span>')+'</td></tr>'; }).join('')
+    +'</tbody></table></div>';
+  h+=P.chapters.map(function(c){ return presChapter(c, S[c.id]); }).join('');
+  if((P.folded_clusters||[]).length) h+='<h3>Families without their own chapter</h3><ul>'+P.folded_clusters.map(function(x){return '<li>'+(idLink(x.cluster_id)||esc(x.cluster_id))+' in '+esc(x.into)+': '+esc(x.reason)+'</li>';}).join('')+'</ul>';
+  if((P.companion||[]).length) h+='<h3>In the searchable companion</h3><ul>'+P.companion.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';
+  if((P.missing_information||[]).length) h+='<h3>Missing information</h3><ul>'+P.missing_information.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';
+  var lk=Object.keys(lex).sort(); if(lk.length) h+='<h3>Pronunciation</h3><div class="wrap"><table><thead><tr><th>Term</th><th>Say</th></tr></thead><tbody>'+lk.map(function(k){return '<tr><td>'+esc(k)+'</td><td>'+esc(lex[k])+'</td></tr>';}).join('')+'</tbody></table></div>';
+  main.innerHTML=h;
+  Array.prototype.forEach.call(main.querySelectorAll('a[data-pres]'),function(a){ a.onclick=function(e){ e.preventDefault(); var t=document.getElementById('pres-'+a.getAttribute('data-pres')); if(t) t.scrollIntoView(); }; });
+}
+function render(){
+  SLIDE_GO=null;
+  var hash=location.hash.replace(/^#/,'')||(META.report&&DATA.report_view?'report':rows('explainers').length?'explainers':(RANK.ranked||[]).length?'ranking':'overview'), parts=hash.split('?'), sec=parts[0], qs=parts[1]||'';
+  var m=/q=([^&]*)/.exec(qs); if(m){state.q=decodeURIComponent(m[1]);}
+  if(sec==='results'&&/(^|&)raw=1(&|$)/.test(qs)) LB.raw=true;   // '#results?raw=1&q=IRCoT': the all-rows table, filtered
+  var navLink=function(s){var n=s[0]==='overview'||s[0]==='report'?'':s[0]==='details'?detailPapers().length:s[0]==='ranking'?(RANK.ranked||[]).length:s[0]==='coverage'?(COV?(COV.neighbours||[]).filter(function(n){return !n.pool||n.pool.status!=='included';}).length:''):s[0]==='adjacent'?(ADJ?adjTopics().length:''):s[0]==='decisions'?(META.decisions||[]).length:s[0]==='presentation'?PRES.plan.chapters.length:rows(s[0]).length; return '<a href="#'+s[0]+'"'+(s[0]===sec?' class="active"':'')+'>'+esc(s[1])+'<span class="cnt">'+n+'</span></a>';};
+  var top=NAV_TOP.map(function(k){return SECTIONS.filter(function(s){return s[0]===k;})[0];}), rest=SECTIONS.filter(function(s){return NAV_TOP.indexOf(s[0])<0;});
+  var inRest=rest.some(function(s){return s[0]===sec;}), open=NAV_OPEN===null?inRest:(NAV_OPEN||inRest);
+  document.getElementById('nav').innerHTML='<h1>'+esc(META.slug||'Review hub')+'</h1>'+top.map(navLink).join('')+'<details class="grp" id="nav-grp"'+(open?' open':'')+'><summary'+(inRest?' class="active"':'')+'>Details</summary>'+rest.map(navLink).join('')+'</details>'+(DATA.pipeline_url?'<a href="'+esc(DATA.pipeline_url)+'" id="pipeline" target="_blank" rel="noopener" title="Steps, processes and code files of the reviewing-literature pipeline">How this review was built</a>':'')+'<a href="#" id="theme">Toggle theme</a>';
+  document.getElementById('nav-grp').ontoggle=function(){NAV_OPEN=this.open;};
+  var main=document.getElementById('main');
+  if(sec==='overview'){ main.innerHTML=overview(); bindBib(); }
+  else if(sec==='report'&&DATA.report_view){ reportPage(main); }
+  else if(sec==='ranking'){ main.innerHTML=rankingPage(); }
+  else if(sec==='explainers'){ slidesPage(main); }
+  else if(sec==='details'){ detailsPage(main); }
+  else if(sec==='coverage'){ coveragePage(main); }
+  else if(sec==='adjacent'){ adjacentPage(main); }
+  else if(sec==='decisions'){ main.innerHTML=decisionsPage(); }
+  else if(sec==='presentation'&&PRES&&PRES.plan){ presentationPage(main); }
+  else if(sec==='results'&&!LB.raw&&!/^R\d{3,}$/.test(state.q.trim())){ leaderboardPage(main); }
+  else {
+    var recs, cols, title=SECTIONS.filter(function(s){return s[0]===sec;}).map(function(s){return s[1];})[0]||sec;
+    if(sec==='results'){ recs=rows('results').map(function(r){var o={}; Object.keys(r).forEach(function(k){o[k]=r[k];}); var rk=RANKS[r.id]; o.rank_in_reviewed_set=rk?rk[0]+'/'+rk[1]:null; return o;}); cols=colsOf(recs); }
+    else { recs=rows(sec); cols=colsOf(recs); }
+    main.innerHTML='<h2>'+esc(title)+'</h2>'+(sec==='papers'?bibLink():'')+(sec==='results'?'<p><a href="#results" id="lb-back">Back to leaderboards</a></p>'+trimNote():'')+((sec==='papers'||sec==='datasets')&&TRIM&&(TRIM.reasons_cut||TRIM.papers_slimmed)?trimNote():'')+'<div class="tools"><input type="search" id="q" placeholder="filter rows…" value="'+esc(state.q)+'"><button id="clear">clear</button><span class="muted">click a header to sort · tinted cells carry a negative evidence status</span></div>'+table(sec,recs,cols);
+    var qi=document.getElementById('q'); qi.oninput=function(){state.q=qi.value; var scroll=window.scrollY; main.querySelector('.wrap').outerHTML=table(sec,recs,cols).split('<p class="muted">')[0]; main.querySelector('p.muted:last-of-type'); bindHeaders(sec,recs,cols); window.scrollTo(0,scroll); qi.focus();};
+    document.getElementById('clear').onclick=function(){state.q=''; location.hash='#'+sec; render();};
+    bindHeaders(sec,recs,cols); bindBib();
+    var bk=document.getElementById('lb-back'); if(bk) bk.onclick=function(e){e.preventDefault(); LB.raw=false; state.q=''; if(location.hash!=='#results') location.hash='#results'; else render();};
+  }
+  document.getElementById('theme').onclick=function(e){e.preventDefault(); var r=document.documentElement; var cur=r.getAttribute('data-theme'); var dark=cur?cur==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches; r.setAttribute('data-theme',dark?'light':'dark'); try{localStorage.setItem('hub-theme',dark?'light':'dark');}catch(x){}};
+}
+function bindHeaders(sec,recs,cols){ Array.prototype.forEach.call(document.querySelectorAll('th[data-col]'),function(th){ th.onclick=function(){var c=th.getAttribute('data-col'); var s=state.sort[sec]; state.sort[sec]=(s&&s.col===c)?{col:c,dir:-s.dir}:{col:c,dir:1}; render();}; }); }
+try{var th=localStorage.getItem('hub-theme'); if(th) document.documentElement.setAttribute('data-theme',th);}catch(x){}
+window.addEventListener('hashchange',function(){state.q=''; LB.raw=false; render();});
+document.addEventListener('keydown',function(e){ if(!SLIDE_GO) return; var t=e.target&&e.target.tagName; if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey) return; if(e.key==='ArrowRight'){e.preventDefault(); SLIDE_GO(1);} else if(e.key==='ArrowLeft'){e.preventDefault(); SLIDE_GO(-1);} });
+render();
+})();
+</script>

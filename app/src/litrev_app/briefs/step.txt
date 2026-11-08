@@ -1,0 +1,9 @@
+APP MODE (Litrev App). Use the reviewing-literature skill: read $skill/SKILL.md and the files it says to read, then
+read $skill/app-mode.md; app-mode.md overrides SKILL.md where they differ.
+Review: $review   LITREV_HOME: $root
+Run every command exactly as: python3 $skill/scripts/litrev.py <cmd> --review $review
+Job: step $step ($title). Run `status --json` first; advance until step $step is complete (earlier todo or stale rows first if step $step needs them). Stop at a PARKED answer, a blocker or a hand-off point (app-mode.md).
+Ask the person only the scope (step 0). Every other judgement call is yours: decide it, record it with --by agent and add a "Claude decided (DEC0xx): ..." line to notes_for_user (app-mode.md's table); never stop or park for it. If ask_user fails (an error or a timeout instead of an answer, PARKED or INVALID), treat it as PARKED: the scope is the person's, never decide it yourself.
+Subagents: at most $parallel at once; dispatch them with the agent types in SKILL.md's table.
+$extra
+End by writing $review/cache/app/report-$sid.json (app-mode.md, Report).

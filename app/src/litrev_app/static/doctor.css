@@ -1,0 +1,27 @@
+/* Doctor (M1c). Colours fall back to fixed values when app.css doesn't define the variable. */
+.lr-doc { max-width: 860px; }
+.lr-doc h2 { margin: 0 0 .4rem; }
+.lr-doc-row { display: grid; grid-template-columns: 5.5rem 1fr auto; gap: .75rem; align-items: start;
+  padding: .6rem 0; border-bottom: 1px solid var(--border, #d0d0d0); }
+.lr-doc-badge { font: 600 .75rem/1.7 system-ui, sans-serif; text-align: center; border-radius: 4px; padding: 0 .3rem; }
+.lr-doc-ok { background: #e3f4e8; color: #1d6b35; }
+.lr-doc-warn { background: #fff3d6; color: #7a5200; }
+.lr-doc-fail { background: #fde4e1; color: #9b1c13; }
+.lr-doc-title { font-weight: 600; }
+.lr-doc-msg { margin: .15rem 0; overflow-wrap: anywhere; }
+.lr-doc-fix { color: var(--muted, #666); font-size: .9em; overflow-wrap: anywhere; }
+.lr-doc-bar { display: flex; gap: .5rem; align-items: center; margin: .8rem 0; }
+.lr-doc-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); display: flex; align-items: flex-start;
+  justify-content: center; padding: 4vh 16px; z-index: 1000; overflow: auto; }
+.lr-doc-card { background: var(--bg, #fff); color: var(--fg, #111); border-radius: 10px; padding: 1.2rem 1.4rem;
+  max-width: 900px; width: 100%; box-shadow: 0 10px 40px rgba(0, 0, 0, .3); }
+@media (prefers-color-scheme: dark) {
+  .lr-doc-ok { background: #163d24; color: #9fe0b2; }
+  .lr-doc-warn { background: #3d3214; color: #f0d38a; }
+  .lr-doc-fail { background: #4a1a16; color: #f5aca5; }
+  .lr-doc-card { background: var(--bg, #1d1d1f); color: var(--fg, #eee); }
+}
+@media (max-width: 600px) {
+  .lr-doc-row { grid-template-columns: 4.5rem 1fr; }
+  .lr-doc-row button { grid-column: 2; }
+}

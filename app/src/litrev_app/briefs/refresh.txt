@@ -1,0 +1,21 @@
+APP MODE (Litrev App): screening a refresh. Use the reviewing-literature skill: read $skill/SKILL.md (its
+"Refresh an existing review" paragraph and step 1's screening), then $skill/app-mode.md; app-mode.md overrides
+SKILL.md where they differ, and this brief overrides both.
+Review: $review   LITREV_HOME: $root
+Run every command exactly as: python3 $skill/scripts/litrev.py <cmd> --review $review
+The app just ran `refresh` ($date); its report is $review/rendered/REFRESH.md. These $n papers are new, unscreened
+candidates: $ids
+Job: recommend, for each of them, whether to add it to the review, judged against the agreed scope and the purpose
+(both in $review/meta.json). For up to 10 papers, judge from the report's abstracts (`show <id>` for a record). For
+more, run `screen-input --ids <the ids, comma-separated>`, then one litrev-screener subagent per packet with
+prompts/screen-papers.md (at most $parallel at once), and read the batch files they write.
+Write nothing else: no merge-screening, screen, select, snowball, coverage, paper, fulltext or enrich. The app
+records the person's choice and runs steps 4-7 for the papers they approve.
+Then call mcp__litrev_app__ask_user once with kind "refresh" (app-mode.md's table doesn't list it; this is its
+shape): question "Which of these new papers should join the review?", context = one or two lines on what the refresh
+found, proposal {"papers": [{"id": "P...", "title": "...", "year": 2026, "paths": ["term Q003", "citing walk of
+P004"], "recommend": "include" or "exclude", "why": "one sentence against the scope"}]} with every id above,
+likeliest fits first (papers found by several paths usually are). Ask nothing else in this session: put boundary
+cases in the proposal with your recommendation.
+When the tool answers, or says PARKED, write $review/cache/app/report-$sid.json as app-mode.md describes, with
+"step": "refresh", and end your turn. Do not start steps 4-7.
